@@ -15,6 +15,11 @@ export class AuthService {
     });
   }
 
-  async logout() {}
+  async isLoggedIn() {
+    return new Promise((resolve) => {
+    });
+  }
+
+  async logout() { }
 
 }
