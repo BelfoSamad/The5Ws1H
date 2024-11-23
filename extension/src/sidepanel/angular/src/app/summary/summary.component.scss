@@ -1,0 +1,199 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+    height: 100%;
+}
+
+.title {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+}
+
+.top-summary {
+    display: flex;
+    flex-direction: row;
+}
+
+.subtitle {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    margin: 8px 0;
+    width: 420px;
+    flex: 1;
+    text-align: start;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.animated-gradient {
+    width: 420px;
+    height: 320px;
+    border-radius: 16px;
+    
+    background: linear-gradient(90deg, var(--sys-primary), var(--sys-secondary));
+    background-size: 200% 200%;
+    animation: gradientAnimation 1s ease infinite;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.content-card {
+    width: 420px;
+    height: 320px;
+}
+
+.question {
+    font-family: "Protest Guerrilla", sans-serif;
+}
+
+.answer {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    overflow-y: auto;
+    margin: auto;
+    padding: 0 16px;
+}
+
+.scroll-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.indicators {
+    display: flex;
+    gap: 10px;
+}
+
+.indicators span {
+    font-size: 24px;
+    color: var(--mdc-elevated-card-container-color);
+}
+
+.indicators .active {
+    color: var(--sys-secondary);
+}
+
+.navigation-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+//------------------------ Expansion Section
+mat-card-content, mat-card-content:first-child {
+    padding: 0;
+}
+
+.conversation-container {
+    flex: 1;
+    height: 224px;
+    overflow-y: auto;
+    align-content: center;
+    text-align: center;
+}
+
+mat-spinner {
+    margin: auto;
+}
+
+.questions-card {
+    background-color: transparent;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    margin: 8px 0;
+    width: 100%;
+}
+
+.message-bubble {
+    border-radius: 16px;
+    max-width: 60%;
+    padding: 16px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--sys-outline);
+    margin-bottom: 8px;
+}
+
+.expansion-question {
+    align-self: flex-end;
+    margin-right: 8px;
+}
+
+.expansion-answer {
+    align-self: flex-start;
+    margin-left: 8px;
+}
+
+.query-button {
+    margin-right: 16px;
+}
+
+.query-button mat-icon {
+    font-size: 24px;
+}
+
+.query-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.query {
+    flex: 1;
+    margin: 0 16px;
+}
+
+.query-input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+mat-error {
+    align-self: start;
+    margin-top: 4px;
+    margin-left: 24px;
+}
+
+:host ::ng-deep .mdc-text-field--outlined {
+    --mdc-outlined-text-field-container-shape: 28px;
+}
+
+.index-button {
+    display: inline-flex;
+    align-self: center;
+    width: 196px;
+    margin-bottom: 48px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.index-button span {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+}

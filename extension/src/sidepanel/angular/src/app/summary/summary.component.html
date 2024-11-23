@@ -1,0 +1,69 @@
+<div class="container">
+    @if(isLoading) {
+    <p class="title mat-title-large">Getting Article...</p>
+    <p class="subtitle mat-title-medium">Summarizing...</p>
+    <div class="animated-gradient"></div>
+    } @else {
+    <p class="title mat-title-medium">{{ article?.title ?? 'Getting Article...'}}</p>
+    <div class="top-summary">
+        <p class="subtitle mat-title-medium">{{ article?.url ?? 'Error Summarizing :(' }}</p>
+        <button mat-icon-button *ngIf="isHome" (click)="closeSummary()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    @if(currentIndex == summaries.length) {
+    <mat-card appearance="outlined" class="questions-card">
+        <mat-card-content>
+            <div class="conversation-container" #conversation>
+                <mat-spinner *ngIf="indexLoading"></mat-spinner>
+                <button class="index-button" mat-flat-button *ngIf="!isIndexed && !indexLoading"
+                    (click)="indexArticle()">
+                    <span class="mat-label-large">Index Article</span>
+                </button>
+                <p *ngIf="isIndexed && expansion.length == 0">No questions available yet.</p>
+                <div class="message" *ngFor="let exp of expansion">
+                    <div class="message-bubble expansion-question"> {{ exp.question }}</div>
+                    <div class="message-bubble expansion-answer">{{ exp.answer }}</div>
+                </div>
+            </div>
+        </mat-card-content>
+        <mat-card-footer class="query-container">
+            <div class="query-input-container">
+                <mat-form-field class="query" subscriptSizing="dynamic" appearance="outline">
+                    <input matInput #query [disabled]="!isIndexed && !queryLoading" placeholder="Have a question?" />
+                </mat-form-field>
+                <mat-error *ngIf="queryError">Query is required</mat-error>
+            </div>
+            <button class="query-button" mat-icon-button class="query-button" [disabled]="!isIndexed && !queryLoading"
+                (click)="askQuestion(query)">
+                <mat-icon *ngIf="!queryLoading">send</mat-icon>
+                <mat-spinner [diameter]="24" *ngIf="queryLoading"></mat-spinner>
+            </button>
+        </mat-card-footer>
+    </mat-card>
+    } @else {
+    <mat-card appearance="raised" class="content-card">
+        <mat-card-header>
+            <mat-card-title class="question mat-display-small">{{ summaries.length > 0 ?
+                summaries[currentIndex][0].toUpperCase() : 'ERROR!' }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="answer mat-body-large">
+            <span>{{ summaries.length > 0 ? summaries[currentIndex][1] : 'Error Loading Article' }}</span>
+        </mat-card-content>
+    </mat-card>
+    }
+    <div class="scroll-container" *ngIf="summaries.length > 0">
+        <div class="indicators">
+            <span *ngFor="let item of summaries; let i = index" [class.active]="i === currentIndex">•</span>
+        </div>
+        <div class="navigation-buttons">
+            <button mat-icon-button (click)="goToPrevious()" [disabled]="currentIndex === 0">
+                <mat-icon>chevron_left</mat-icon>
+            </button>
+            <button mat-icon-button (click)="goToNext()" [disabled]="currentIndex === summaries.length">
+                <mat-icon>chevron_right</mat-icon>
+            </button>
+        </div>
+    </div>
+    }
+</div>
