@@ -51,6 +51,7 @@ function handleChromeMessages(message, _sender, sendResponse) {
         case "summarize":
             (async () => {
                 try {
+                    const url = message.url
                     getDocs(query(collection(db, "articles"), where("url", "==", url))).then(async querySnapshot => {
                         if (querySnapshot.empty) {
                             const analyzeWebsite = httpsCallable(functions, 'analyzeWebsiteFlow');

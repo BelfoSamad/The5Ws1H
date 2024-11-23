@@ -1,4 +1,4 @@
-import {sendArticle} from "./utilities";
+import {sendArticle, startAnimations, stopAnimations} from "./utilities";
 
 //------------------------------- Declarations
 let creating; // A global promise to avoid concurrency issues
@@ -8,6 +8,32 @@ const tabs = new Map();
 //------------------------------- Starting
 setupOffscreenDocument("./offscreen/index.html");
 chrome.sidePanel.setPanelBehavior({openPanelOnActionClick: true}).catch((error) => console.error(error));
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.target == "background") {
+        switch (message.action) {
+            case "summarize":
+                // get active tab's URL (RODO: Remove this check, receive URL here)
+                chrome.tabs.query({active: true, currentWindow: true}, (activeTabs) => {
+                    const activeTab = activeTabs[0];
+
+                    // start animations
+                    startAnimations(activeTab.id);
+
+                    // summarize article
+                    const result = summarizeArticle(activeTab.url);
+                    if (result.error != null) sendError(result.error);
+                    else {
+                        tabs.set(activeTabId, result.article); // set locally
+                        sendArticle(result.article);
+                    }
+
+                    // stop animations
+                    stopAnimations(activeTab.id);
+                });
+                break;
+        }
+    }
+});
 
 //------------------------------- Tab Handling
 chrome.webNavigation.onCompleted.addListener(async (details) => {
