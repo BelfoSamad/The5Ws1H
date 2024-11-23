@@ -1,0 +1,11 @@
+<div class="container">
+    <mat-toolbar>
+        <button mat-mini-fab (click)="goBack()">
+            <mat-icon>keyboard_arrow_left</mat-icon>
+        </button>
+    </mat-toolbar>
+
+    <div class="content">
+        <app-summary [isLoading]="summarizeLoading" [article]="article" [isHome]="false"></app-summary>
+    </div>
+</div>

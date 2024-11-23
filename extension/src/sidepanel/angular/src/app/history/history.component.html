@@ -1,0 +1,20 @@
+<div class="container">
+    <mat-toolbar>
+        <button mat-mini-fab (click)="goBack()">
+            <mat-icon>keyboard_arrow_left</mat-icon>
+        </button>
+        <h4>History</h4>
+    </mat-toolbar>
+    <div class="article-list">
+        <p *ngIf="!loading && empty">No articles found.</p>
+        <mat-spinner *ngIf="loading"></mat-spinner>
+        <div *ngFor="let key of sortedKeys">
+            <p class="date mat-title-medium">{{key}}</p>
+            <mat-card appearance="outlined" ng-repeat="" *ngFor="let article of groupedArticles[key]" class="article-item"
+                (click)="goArticle(article)">
+                <mat-card-content class="article-title mat-title-medium">{{ article.title }}</mat-card-content>
+                <mat-card-content class="article-subtitle mat-body-medium">{{ article.url }}</mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>

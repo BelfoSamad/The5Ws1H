@@ -24,4 +24,9 @@ export class SummarizerService {
     });
   }
 
+  async getHistory(): Promise<Article[]> {
+    return new Promise((resolve) => {
+    });
+  }
+
 }
