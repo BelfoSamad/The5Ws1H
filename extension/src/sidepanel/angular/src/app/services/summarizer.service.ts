@@ -33,16 +33,15 @@ export class SummarizerService {
   }
 
   async indexArticle(articleId: string) {
+    return chrome.runtime.sendMessage({target: "offscreen", action: "index", articleId: articleId});
   }
 
   async askQuestion(articleId: string, question: string): Promise<string> {
-    return new Promise((resolve) => {
-    });
+    return chrome.runtime.sendMessage({target: "offscreen", action: "expand", articleId: articleId, query: question});
   }
 
-  async getHistory(): Promise<Article[]> {
-    return new Promise((resolve) => {
-    });
+  async getHistory() {
+    chrome.runtime.sendMessage({target: "background", action: "history"});
   }
 
 }

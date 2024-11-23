@@ -71,7 +71,7 @@ function handleChromeMessages(message, _sender, sendResponse) {
                         } else {
                             const snapshot = querySnapshot.docs[0]
                             const articleData = snapshot.data()
-                            const questionsQuery = query(collection(this.firestore, `articles/${snapshot.id}/questions`), orderBy("createdAt", "asc"))
+                            const questionsQuery = query(collection(db, `articles/${snapshot.id}/questions`), orderBy("createdAt", "asc"))
                             const article = {
                                 articleId: snapshot.id,
                                 url: articleData['url'],
@@ -90,9 +90,47 @@ function handleChromeMessages(message, _sender, sendResponse) {
                         }
                     });
                 } catch (e) {
+                    sendResponse({error: e.message, article: null})
+                }
+            })();
+            return true;
+        case "history":
+            (async () => {
+                try {
+                    getDocs(query(collection(db, "articles"), where("__name__", "in", articleIds))).then(async querySnapshot => {
+                        let articles = []
+                        for (const snapshot of QuerySnapshot.docs) {
+                            const articleData = snapshot.data()
+                            const questionsQuery = query(collection(db, `articles/${snapshot.id}/questions`), orderBy("createdAt", "asc"))
+                            articles.push({
+                                articleId: snapshot.id,
+                                url: articleData['url'],
+                                title: articleData['title'],
+                                createdAt: articleData['createdAt'].toDate(),
+                                indexed: articleData['indexed'],
+                                summary: articleData['summary'],
+                                expansion: (await getDocs(questionsQuery)).docs.map(exp => {
+                                    return {
+                                        question: exp.data()['question'],
+                                        answer: exp.data()['answer']
+                                    }
+                                })
+                            })
+                        }
+                        sendResponse({error: null, articles: articles})
+                    });
+                } catch (e) {
                     sendResponse({error: e.message, article: null});
                 }
             })();
+            return true;
+        case "index":
+            const indexArticle = httpsCallable(this.functions, 'indexArticleFlow');
+            indexArticle({articleId: message.articleId}).then(_res => {sendResponse({done: true})})
+            return true;
+        case "expand":
+            const askQuestion = httpsCallable(this.functions, 'expandOnArticleFlow');
+            askQuestion({articleId: message.articleId, query: message.query}).then(res => {sendResponse({answer: res.data})})
             return true;
     }
 }
