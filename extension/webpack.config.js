@@ -7,8 +7,10 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = {
   entry: {
-    background: './src/background.js',
+    config: './src/configs.js',
     offscreen: './src/offscreen/script.js',
+    background: './src/background.js',
+    utilities: './src/utilities.js'
   },
   performance: {
     hints: false,

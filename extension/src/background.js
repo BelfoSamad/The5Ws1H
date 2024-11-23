@@ -1,9 +1,28 @@
+import {sendArticle} from "./utilities";
+
 //------------------------------- Declarations
 let creating; // A global promise to avoid concurrency issues
+let activeTabId = -1;
+const tabs = new Map();
 
 //------------------------------- Starting
-setupOffscreenDocument("./offscreen/offscreen.html");
+setupOffscreenDocument("./offscreen/index.html");
 chrome.sidePanel.setPanelBehavior({openPanelOnActionClick: true}).catch((error) => console.error(error));
+
+//------------------------------- Tab Handling
+chrome.webNavigation.onCompleted.addListener(async (details) => {
+    if (details.frameId === 0) {
+        //TODO: Send URL to Sidepanel
+    }
+});
+chrome.tabs.onRemoved.addListener((tabId, _removeInfo) => {
+    tabs.delete(tabId);
+});
+chrome.tabs.onActivated.addListener((activeInfo) => {
+    activeTabId = activeInfo.tabId;// update activeTabId
+    // send article to sidepanel
+    sendArticle(tabs.get(activeTabId));
+});
 
 //------------------------------- Handle Offscreen Documents
 async function setupOffscreenDocument(path) {
