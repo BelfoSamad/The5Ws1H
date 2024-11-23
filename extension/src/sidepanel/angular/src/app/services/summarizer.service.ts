@@ -1,25 +1,41 @@
+///<reference types="chrome"/>
 import {Injectable} from '@angular/core';
 import {Article} from '../utils/types';
+import {fromEventPattern, map} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SummarizerService {
 
+  //Data
+  article: Article | undefined;
+
+  listenToSummarization() {
+    return fromEventPattern(
+      (handler) => chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => handler(message)),
+      (handler) => chrome.runtime.onMessage.removeListener(handler),
+    ).pipe(
+      map((message: any) => {
+        if (message.target == "sidepanel" && message.action == "new_article")
+          this.article = message.article;
+        return message;
+      })
+    );
+  }
+
+  getArticle() {
+    return this.article;
+  }
+
+  summarizeArticle() {
+    chrome.runtime.sendMessage({target: "background", action: "summarize"});
+  }
+
   async indexArticle(articleId: string) {
   }
 
   async askQuestion(articleId: string, question: string): Promise<string> {
-    return new Promise((resolve) => {
-    });
-  }
-
-  async getArticleViaUrl(url: string): Promise<Article> {
-    return new Promise((resolve) => {
-    });
-  }
-
-  async summarizeArticle(url: string): Promise<Article> {
     return new Promise((resolve) => {
     });
   }

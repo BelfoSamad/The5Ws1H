@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, ViewChild} from '@angular/core';
+import {Component, inject, NgZone, OnInit, ViewChild} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {SummarizerService} from '../services/summarizer.service';
 import {Article} from '../utils/types';
@@ -36,38 +36,40 @@ export class HomeComponent implements OnInit {
   readonly dialog = inject(MatDialog);
 
   //Data
-  credit: number = 0;
   url: string | undefined;
   article: Article | undefined;
   summarizeLoading: boolean | null = null;
 
-  constructor(private router: Router, private summarizerService: SummarizerService, private authService: AuthService) { }
-  
-  ngOnInit(): void {
-    //TODO: Get URL from chrome
+  constructor(private router: Router, private zone: NgZone, private summarizerService: SummarizerService, private authService: AuthService) {
+    this.article = this.summarizerService.getArticle(); // get already saved analysis
+  }
+
+  async ngOnInit(): Promise<void> {
+    // listen to messages
+    this.summarizerService.listenToSummarization().subscribe((message: any) => {
+      this.zone.run(() => {
+        if (message.target == "sidepanel") switch (message.action) {
+          case "article":
+            this.article = message.article;
+            this.summarizeLoading = false;
+            break;
+          case "error":
+            if (message.error == "ERROR::AUTH") this.logout();
+            else {
+              this.summarizeLoading = null;
+              this._snackBar.open(message.error);
+            }
+            break;
+          case "start_animation":
+            this.summarizeLoading = true;
+            break;
+        }
+      });
+    });
   }
 
   summarizeArticle() {
-    this.summarizeLoading = true
-    this.summarizerService.getArticleViaUrl(this.url!).then(article => {
-      if (article != null) {
-        this.article = article
-        this.summarizeLoading = false
-      } else {
-        this.summarizerService.summarizeArticle(this.url!).then(article => {
-          if (article != null) {
-            this.article = article
-            this.summarizeLoading = false
-          } else this.summarizeLoading = null
-        }).catch(err => {
-          this.summarizeLoading = null
-          this._snackBar.open(err)
-        });
-      }
-    }).catch(err => {
-      this.summarizeLoading = null
-      this._snackBar.open(err)
-    });
+    this.summarizerService.summarizeArticle();
   }
 
   summaryClosed() {

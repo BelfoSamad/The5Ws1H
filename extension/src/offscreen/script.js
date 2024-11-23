@@ -1,6 +1,6 @@
 import {app, defaults} from '../configs';
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth/web-extension';
-import {getFirestore, getDoc, setDoc, doc} from 'firebase/firestore';
+import {getFirestore, getDocs, setDoc, doc} from 'firebase/firestore';
 import {getFunctions, httpsCallable} from 'firebase/functions';
 
 const auth = getAuth(app);
@@ -47,5 +47,51 @@ function handleChromeMessages(message, _sender, sendResponse) {
         case "logout":
             auth.signOut();
             break;
+        //--------------------------- Summarizer
+        case "summarize":
+            (async () => {
+                try {
+                    getDocs(query(collection(db, "articles"), where("url", "==", url))).then(async querySnapshot => {
+                        if (querySnapshot.empty) {
+                            const analyzeWebsite = httpsCallable(functions, 'analyzeWebsiteFlow');
+                            analyzeWebsite({url: url}).then(res => {
+                                const result = res.data;
+                                const article = {
+                                    articleId: result.articleId,
+                                    title: result.title,
+                                    createdAt: result.createdAt,
+                                    url: url,
+                                    indexed: false,
+                                    summary: result.summary,
+                                    expansion: undefined
+                                };
+                                sendResponse({error: null, article: article});
+                            });
+                        } else {
+                            const snapshot = querySnapshot.docs[0]
+                            const articleData = snapshot.data()
+                            const questionsQuery = query(collection(this.firestore, `articles/${snapshot.id}/questions`), orderBy("createdAt", "asc"))
+                            const article = {
+                                articleId: snapshot.id,
+                                url: articleData['url'],
+                                title: articleData['title'],
+                                createdAt: articleData['createdAt'].toDate(),
+                                indexed: articleData['indexed'],
+                                summary: articleData['summary'],
+                                expansion: (await getDocs(questionsQuery)).docs.map(exp => {
+                                    return {
+                                        question: exp.data()['question'],
+                                        answer: exp.data()['answer']
+                                    }
+                                })
+                            };
+                            sendResponse({error: null, article: article})
+                        }
+                    });
+                } catch (e) {
+                    sendResponse({error: e.message, article: null});
+                }
+            })();
+            return true;
     }
 }
