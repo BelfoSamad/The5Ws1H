@@ -1,0 +1,66 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+    height: 100%;
+}
+
+mat-toolbar {
+    background-color: transparent;
+    padding-right: 0px;
+    padding-left: 8px;
+    padding-top: 16px;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.topbar-logo {
+    font-size: 32px;
+    color: var(--sys-secondary);
+    font-family: "Protest Guerrilla", sans-serif;
+}
+
+.navigation-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.logo {
+    font-size: 76px;
+    color: var(--sys-secondary);
+    margin-bottom: 32px;
+    font-family: "Protest Guerrilla", sans-serif;
+}
+
+.prompt {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.summarize {
+    display: inline-flex;
+    align-self: center;
+    width: 128px;
+    margin-bottom: 48px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.summarize span {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+}

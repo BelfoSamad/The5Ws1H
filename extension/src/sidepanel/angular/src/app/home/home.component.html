@@ -1,0 +1,26 @@
+<div class="container">
+    <mat-toolbar>
+        <span class="topbar-logo">The5Ws1H</span>
+        <span class="spacer"></span>
+        <div class="navigation-buttons">
+            <button mat-icon-button (click)="goHistory()">
+                <mat-icon>history</mat-icon>
+            </button>
+            <button mat-icon-button (click)="logout()">
+                <mat-icon>logout</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <div class="content">
+        @if (summarizeLoading == null) {
+        <h1 class="logo">Insightful</h1>
+        <p class="prompt mat-title-large">Scan URL Link to get summary!</p>
+        <!-- Scan/Summarize Button -->
+        <button class="summarize" mat-flat-button (click)="summarizeArticle()">
+            <span class="mat-label-large">Summarize</span>
+        </button>
+        } @else {
+        <app-summary (closedEvent)="summaryClosed()" [isLoading]="summarizeLoading!" [article]="article" [isHome]="true"></app-summary>
+        }
+    </div>
+</div>
