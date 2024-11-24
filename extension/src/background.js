@@ -6,7 +6,7 @@ let activeTabId = -1;
 const tabs = new Map();
 
 //------------------------------- Starting
-setupOffscreenDocument("./offscreen/index.html");
+setupOffscreenDocument("./offscreen/offscreen.html");
 chrome.sidePanel.setPanelBehavior({openPanelOnActionClick: true}).catch((error) => console.error(error));
 chrome.runtime.onMessage.addListener((message) => {
     if (message.target == "background") {

@@ -4,6 +4,7 @@
         "release": "webpack --config webpack.production.js"
     },
     "dependencies": {
+        "firebase": "^11.0.1",
         "clean-webpack-plugin": "^4.0.0",
         "copy-webpack-plugin": "^12.0.2",
         "filemanager-webpack-plugin": "^8.0.0",

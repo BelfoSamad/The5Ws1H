@@ -8,13 +8,14 @@ $the5ws1h-theme: mat.define-theme((color: (theme-type: dark, use-system-variable
 
 // Include theme styles.
 :root {
-  @include mat.all-component-themes($phishserCatcher-theme);
-  @include mat.typography-hierarchy($phishserCatcher-theme);
-  @include mat.system-level-colors($phishserCatcher-theme);
-  @include mat.system-level-typography($phishserCatcher-theme);
+  @include mat.all-component-themes($the5ws1h-theme);
+  @include mat.typography-hierarchy($the5ws1h-theme);
+  @include mat.system-level-colors($the5ws1h-theme);
+  @include mat.system-level-typography($the5ws1h-theme);
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 

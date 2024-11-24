@@ -41,7 +41,7 @@ export class SummarizerService {
   }
 
   async getHistory() {
-    chrome.runtime.sendMessage({target: "background", action: "history"});
+    return chrome.runtime.sendMessage({target: "offscreen", action: "history"});
   }
 
 }

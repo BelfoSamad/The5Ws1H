@@ -8,7 +8,7 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 module.exports = {
   entry: {
     config: './src/configs.js',
-    offscreen: './src/offscreen/script.js',
+    offscreen: './src/offscreen/offscreen.js',
     background: './src/background.js',
     utilities: './src/utilities.js'
   },
@@ -20,8 +20,8 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin({cleanStaleWebpackAssets: false}),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, "src", "offscreen", "index.html"),
-      filename: "index.html",
+      template: path.join(__dirname, "src", "offscreen", "offscreen.html"),
+      filename: "offscreen.html",
       chunks: ["offscreen"]
     }),
     new CopyWebpackPlugin({
@@ -37,8 +37,8 @@ module.exports = {
       events: {
         onEnd: {
           move: [
-            {source: 'dist/index.html', destination: 'dist/offscreen/index.html'},
-            {source: 'dist/script.js', destination: 'dist/offscreen/script.js'},
+            {source: 'dist/offscreen.html', destination: 'dist/offscreen/offscreen.html'},
+            {source: 'dist/offscreen.js', destination: 'dist/offscreen/offscreen.js'},
           ],
         }
       }

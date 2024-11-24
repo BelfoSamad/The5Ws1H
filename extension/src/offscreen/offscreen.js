@@ -1,4 +1,4 @@
-import {app, defaults} from '../configs';
+import {app} from '../configs';
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth/web-extension';
 import {getFirestore, getDocs, setDoc, doc} from 'firebase/firestore';
 import {getFunctions, httpsCallable} from 'firebase/functions';
@@ -21,7 +21,7 @@ function handleChromeMessages(message, _sender, sendResponse) {
             (async () => {
                 try {
                     let userCreds = await createUserWithEmailAndPassword(auth, message.email, message.password);
-                    await setDoc(doc(db, "users", userCreds.user.uid), defaults);
+                    await setDoc(doc(db, "users", userCreds.user.uid), {});
                     sendResponse({done: true});
                 } catch (e) {
                     sendResponse({done: false, error: e.message});
