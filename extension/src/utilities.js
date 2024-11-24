@@ -11,10 +11,10 @@ export function stopAnimations(tabId) {
     chrome.tabs.sendMessage(tabId, {action: "stop_animation"});
 }
 
-export function sendArticle(article) {
-    chrome.runtime.sendMessage({target: "sidepanel", action: "article", article: article});
+export function sendUrl(url) {
+    chrome.runtime.sendMessage({target: "sidepanel", action: "url", url: url});
 }
 
-export function sendError(error) {
-    chrome.runtime.sendMessage({target: "sidepanel", action: "error", error: error});
+export function sendResult(result) {
+    chrome.runtime.sendMessage({target: "sidepanel", action: "result", result: result});
 }

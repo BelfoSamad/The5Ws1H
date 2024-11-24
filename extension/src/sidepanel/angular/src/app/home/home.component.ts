@@ -1,3 +1,4 @@
+///<reference types="chrome"/>
 import {Component, inject, NgZone, OnInit, ViewChild} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {SummarizerService} from '../services/summarizer.service';
@@ -41,7 +42,7 @@ export class HomeComponent implements OnInit {
   summarizeLoading: boolean | null = null;
 
   constructor(private router: Router, private zone: NgZone, private summarizerService: SummarizerService, private authService: AuthService) {
-    this.article = this.summarizerService.getArticle(); // get already saved analysis
+    chrome.runtime.sendMessage({target: "background", action: "init"});
   }
 
   async ngOnInit(): Promise<void> {
@@ -49,19 +50,26 @@ export class HomeComponent implements OnInit {
     this.summarizerService.listenToSummarization().subscribe((message: any) => {
       this.zone.run(() => {
         if (message.target == "sidepanel") switch (message.action) {
-          case "article":
-            this.article = message.article;
-            this.summarizeLoading = false;
-            break;
-          case "error":
-            if (message.error == "ERROR::AUTH") this.logout();
-            else {
-              this.summarizeLoading = null;
-              this._snackBar.open(message.error);
-            }
+          case "url":
+            this.url = message.url;
             break;
           case "start_animation":
             this.summarizeLoading = true;
+            break;
+          case "result":
+            if (message.result.error != null) {
+              if (message.error == "ERROR::AUTH") this.logout();
+              else {
+                this.summarizeLoading = null;
+                this._snackBar.open(message.error);
+              }
+            } else {
+              if (message.result.article == null) this.summarizeLoading = null;
+              else {
+                this.article = message.result.article;
+                this.summarizeLoading = false;
+              }
+            }
             break;
         }
       });

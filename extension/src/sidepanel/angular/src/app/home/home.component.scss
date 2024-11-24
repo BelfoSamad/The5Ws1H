@@ -36,19 +36,24 @@ mat-toolbar {
     text-align: center;
 }
 
-.logo {
-    font-size: 76px;
-    color: var(--sys-secondary);
-    margin-bottom: 32px;
-    font-family: "Protest Guerrilla", sans-serif;
-}
-
 .prompt {
     font-family: "Poppins", sans-serif;
+    width: 90%;
+    overflow-wrap: break-word;
+    white-space: normal;
     font-weight: 700;
-    font-size: 32px;
     margin-top: 16px;
     margin-bottom: 16px;
+}
+
+.prompt span {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+}
+
+.loading-url {
+    opacity: var(--opacity);
+    animation: loadingText 0.5s infinite alternate;
 }
 
 .summarize {
@@ -63,4 +68,20 @@ mat-toolbar {
 .summarize span {
     font-family: "Poppins", sans-serif;
     font-weight: 700;
+}
+
+@property --opacity {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 1;
+}
+
+@keyframes loadingText {
+    0% {
+        --opacity: 1
+    }
+
+    100% {
+        --opacity: 0.5
+    }
 }

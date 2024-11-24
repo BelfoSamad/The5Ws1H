@@ -1,6 +1,6 @@
 <div class="container">
     <mat-toolbar>
-        <span class="topbar-logo">The5Ws1H</span>
+        <span class="topbar-logo">5Ws1H</span>
         <span class="spacer"></span>
         <div class="navigation-buttons">
             <button mat-icon-button (click)="goHistory()">
@@ -13,14 +13,16 @@
     </mat-toolbar>
     <div class="content">
         @if (summarizeLoading == null) {
-        <h1 class="logo">Insightful</h1>
-        <p class="prompt mat-title-large">Scan URL Link to get summary!</p>
+        <p class="prompt mat-body-large">Article from:<br />
+            <span [ngClass]="url == null ? 'loading-url mat-body-large' : 'mat-body-medium'">{{url ?? "Not detected, Refresh!"}}</span>
+        </p>
         <!-- Scan/Summarize Button -->
         <button class="summarize" mat-flat-button (click)="summarizeArticle()">
             <span class="mat-label-large">Summarize</span>
         </button>
         } @else {
-        <app-summary (closedEvent)="summaryClosed()" [isLoading]="summarizeLoading!" [article]="article" [isHome]="true"></app-summary>
+        <app-summary (closedEvent)="summaryClosed()" [isLoading]="summarizeLoading!" [article]="article"
+            [isHome]="true"></app-summary>
         }
     </div>
 </div>

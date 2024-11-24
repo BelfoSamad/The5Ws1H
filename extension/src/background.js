@@ -1,9 +1,10 @@
-import {sendArticle, startAnimations, stopAnimations} from "./utilities";
+import {sendUrl, sendResult, startAnimations, summarizeArticle, stopAnimations} from "./utilities";
 
 //------------------------------- Declarations
 let creating; // A global promise to avoid concurrency issues
 let activeTabId = -1;
-const tabs = new Map();
+const tabArticles = new Map();
+const tabUrls = new Map();
 
 //------------------------------- Starting
 setupOffscreenDocument("./offscreen/offscreen.html");
@@ -11,6 +12,10 @@ chrome.sidePanel.setPanelBehavior({openPanelOnActionClick: true}).catch((error) 
 chrome.runtime.onMessage.addListener((message) => {
     if (message.target == "background") {
         switch (message.action) {
+            case "init":
+                sendResult({article: tabArticles.get(activeTabId)});
+                sendUrl(tabUrls.get(activeTabId));
+                break;
             case "summarize":
                 // get active tab's URL (RODO: Remove this check, receive URL here)
                 chrome.tabs.query({active: true, currentWindow: true}, (activeTabs) => {
@@ -21,11 +26,10 @@ chrome.runtime.onMessage.addListener((message) => {
 
                     // summarize article
                     const result = summarizeArticle(activeTab.url);
-                    if (result.error != null) sendError(result.error);
-                    else {
-                        tabs.set(activeTabId, result.article); // set locally
-                        sendArticle(result.article);
-                    }
+                    sendResult(result);
+
+                    // set locally
+                    if (result.error == null) tabArticles.set(activeTabId, result.article);
 
                     // stop animations
                     stopAnimations(activeTab.id);
@@ -37,8 +41,10 @@ chrome.runtime.onMessage.addListener((message) => {
 
 //------------------------------- Tab Handling
 chrome.webNavigation.onCompleted.addListener(async (details) => {
+    // Send url to sidepanel
     if (details.frameId === 0) {
-        //TODO: Send URL to Sidepanel
+        tabUrls.set(activeTabId, details.url);
+        sendUrl(details.url);
     }
 });
 chrome.tabs.onRemoved.addListener((tabId, _removeInfo) => {
@@ -46,8 +52,9 @@ chrome.tabs.onRemoved.addListener((tabId, _removeInfo) => {
 });
 chrome.tabs.onActivated.addListener((activeInfo) => {
     activeTabId = activeInfo.tabId;// update activeTabId
-    // send article to sidepanel
-    sendArticle(tabs.get(activeTabId));
+    // send article/url to sidepanel
+    sendResult({article: tabArticles.get(activeTabId)});
+    sendUrl(tabUrls.get(activeTabId));
 });
 
 //------------------------------- Handle Offscreen Documents
