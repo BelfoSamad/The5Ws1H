@@ -3,7 +3,7 @@
     "name": "The5Ws1H",
     "description": "",
     "version": "1.0.0",
-    "permissions": ["activeTab", "sidePanel", "offscreen"],
+    "permissions": ["activeTab", "sidePanel", "offscreen", "storage", "webNavigation"],
     "icons": {
       "16": "./images/icon16.png",
       "32": "./images/icon32.png",

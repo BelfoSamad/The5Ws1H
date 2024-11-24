@@ -7,6 +7,7 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = {
   entry: {
+    firebase_config: './src/firebase_configs.js',
     config: './src/configs.js',
     offscreen: './src/offscreen/offscreen.js',
     background: './src/background.js',
