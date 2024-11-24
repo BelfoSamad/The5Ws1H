@@ -6,7 +6,7 @@ let characterPerToken = 4;
 // based on testings, chunks should be 2000 tokens or 25% of the doc (whichever is shorter)
 let chunkLengthTokens = 2000;
 let overlapTokens = 25; // based on testings, overlap should be the average token count of a sentece (25 tokens)
-const minChunkLength = 25 + overlapTokens * 2; // any smaller text shouldn"t be further chuncked
+const minChunkLength = 25 + overlapTokens * 2; // any smaller text shouldn't be further chuncked
 
 
 export async function getChuckedDocuments(fullText: string, model: string, debug: boolean): Promise<string[]> {
@@ -42,7 +42,13 @@ export async function getChuckedDocuments(fullText: string, model: string, debug
         overlap: overlapTokens * characterPerToken,
         splitter: "sentence",
         delimiters: "",
-    } as any;
+    } as {
+        minLength?: number;
+        maxLength?: number;
+        overlap?: number;
+        splitter?: "sentence" | "paragraph";
+        delimiters?: string;
+    };
 
     if (debug) {
         console.log("DEBUG: Chunk Min Length = " + chunkingConfig.minLength);

@@ -1,4 +1,4 @@
-import {genkit} from 'genkit';
+import {genkit} from "genkit";
 import {
     gemini15Flash,
     googleAI,
@@ -27,10 +27,10 @@ import {extractTextFromPdf} from "./tools/storage";
 import {config} from "dotenv";
 
 // Keys
-const googleAIapiKey = defineSecret("GOOGLE_GENAI_API_KEY");
+const googleAiApiKey = defineSecret("GOOGLE_GENAI_API_KEY");
 
 // ----------------------------------------- Initializations
-const debug = true;
+const debug = false;
 const app = initializeApp({credential: debug ? credential.cert("./firebase-creds.json") : applicationDefault()});
 const firestore = getFirestore(app);
 if (debug) {
@@ -49,9 +49,9 @@ const indexConfig = {
 // ----------------------------------------- Configurations
 if (debug) config();
 const ai = genkit({
-    promptDir: './prompts',
+    promptDir: "./prompts",
     plugins: [
-        debug ? googleAI({apiKey: process.env.GOOGLE_GENAI_API_KEY}) : googleAI(),
+        debug ? googleAI({apiKey: process.env.GENAI_API_KEY}) : googleAI(),
     ],
 });
 
@@ -75,7 +75,7 @@ export const summarizeArticleFlow = debug ? ai.defineFlow(
     {
         name: "summarizeArticleFlow",
         httpsOptions: {
-            secrets: [googleAIapiKey],
+            secrets: [googleAiApiKey],
             cors: true,
         },
         inputSchema: z.object({
@@ -95,7 +95,7 @@ export const summarizeArticleFlow = debug ? ai.defineFlow(
     doSummarizeArticleFlow,
 );
 
-async function doSummarizeArticleFlow(input: any) {
+async function doSummarizeArticleFlow(input: { userId: string, url: string }) {
     const user = await getUser(firestore, input.userId);
     // ------------------------ Get Article
     const article = debug ? await extractTextFromPdf("article.pdf") : await getContentFromUrl(input.url);
@@ -120,7 +120,7 @@ async function doSummarizeArticleFlow(input: any) {
         );
 
         // Update Credit
-        updateCredit(firestore, input.userId, user!.credit - 1);
+        await updateCredit(firestore, input.userId, user!.credit - 1);
 
         // Return Article
         return {
@@ -146,7 +146,7 @@ export const indexArticleFlow = debug ? ai.defineFlow(
     {
         name: "indexArticleFlow",
         httpsOptions: {
-            secrets: [googleAIapiKey],
+            secrets: [googleAiApiKey],
             cors: true,
         },
         inputSchema: z.object({
@@ -161,7 +161,7 @@ export const indexArticleFlow = debug ? ai.defineFlow(
     doIndexArticleFlow,
 );
 
-async function doIndexArticleFlow(input: any) {
+async function doIndexArticleFlow(input: { articleId: string }) {
     // ------------------------ Extract More Content
     // get article's identifierId
     const article = await getArticle(firestore, input.articleId);
@@ -187,7 +187,7 @@ async function doIndexArticleFlow(input: any) {
     }
 
     // update database (Article is now indexed)
-    setArticleIndexed(firestore, input.articleId);
+    await setArticleIndexed(firestore, input.articleId);
 
     return "DONE"; // response only to avoid Error: Response is missing data field.
 }
@@ -207,7 +207,7 @@ export const expandOnArticleFlow = debug ? ai.defineFlow(
     {
         name: "expandOnArticleFlow",
         httpsOptions: {
-            secrets: [googleAIapiKey],
+            secrets: [googleAiApiKey],
             cors: true,
         },
         inputSchema: z.object({
@@ -223,7 +223,7 @@ export const expandOnArticleFlow = debug ? ai.defineFlow(
     doExpandOnArticleFlow,
 );
 
-async function doExpandOnArticleFlow(input: any) {
+async function doExpandOnArticleFlow(input: { articleId: string, query: string }) {
     // ------------------------ Ask Question
     const articleRetrieverRef = defineFirestoreRetriever(ai, {
         name: "articleRetriever",
@@ -242,17 +242,17 @@ async function doExpandOnArticleFlow(input: any) {
         options: {limit: 3},
     });
 
-    // ask the question w/ context
+    // ask question w/ context
     const askQuestionPrompt = ai.prompt("ask_question");
     const result = (
-        await askQuestionPrompt({input: {query: input.query}, context: context, })
+        await askQuestionPrompt({input: {query: input.query}, context: context})
     ).output();
 
     // return error if failure
     if (result.error != null) throw Error(result.error);
 
     // ------------------------ Save Question/Answer
-    updateArticle(
+    await updateArticle(
         firestore,
         input.articleId,
         input.query,

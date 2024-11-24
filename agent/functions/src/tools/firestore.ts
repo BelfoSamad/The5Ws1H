@@ -10,7 +10,7 @@ export async function getArticle(firestore: Firestore, articleId: string) {
 }
 
 export async function setArticleIndexed(firestore: Firestore, articleId: string) {
-    firestore.collection("articles").doc(articleId).update({
+    await firestore.collection("articles").doc(articleId).update({
         indexed: true,
     });
 }
@@ -19,7 +19,10 @@ export async function addArticle(
     firestore: Firestore,
     title: string,
     url: string,
-    result: any,
+    result: {
+        error?: string,
+        summary?: { what?: string, who?: string, why?: string, where?: string, when?: string, how?: string }
+    },
     on: Date
 ): Promise<string> {
     return (await firestore.collection("articles").add({
@@ -37,7 +40,7 @@ export async function updateArticle(
     query: string,
     answer: string
 ) {
-    firestore.collection("articles").doc(articleId).collection("questions").add({
+    await firestore.collection("articles").doc(articleId).collection("questions").add({
         question: query,
         answer: answer,
         createdAt: new Date(),
@@ -49,5 +52,5 @@ export async function updateCredit(
     userId: string,
     credit: number
 ) {
-    firestore.collection("users").doc(userId).update({credit: credit});
+    await firestore.collection("users").doc(userId).update({credit: credit});
 }
