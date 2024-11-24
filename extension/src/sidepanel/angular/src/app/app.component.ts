@@ -1,5 +1,5 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {Router, RouterOutlet} from '@angular/router';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -9,31 +9,18 @@ import {Subscription} from 'rxjs';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit, OnDestroy {
-  title = 'The5Ws1H';
-  private routerSubscription: Subscription | undefined;
-  currentUrl = "";
-  isAuth = false;
-  isHomePage = true;
+export class AppComponent implements OnInit {
+  title = '5Ws1H';
 
   constructor(private router: Router) { }
 
-
-  ngOnInit() {
-    this.routerSubscription = this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        this.isHomePage = event.urlAfterRedirects === '/';
-        this.isAuth = ['/login', '/register'].includes(event.urlAfterRedirects);
-        this.currentUrl = event.urlAfterRedirects
-      }
+  async ngOnInit(): Promise<void> {
+    // Handle Boarding
+    chrome.storage.local.get(["boardingCompleted"], (res) => {
+      console.log(res['boardingCompleted']);
+      if (res['boardingCompleted'] === true) this.router.navigate(['']);
+      else this.router.navigate(['/boarding']);
     });
-  }
-
-  ngOnDestroy() {
-    // Clean up the subscription when the component is destroyed
-    if (this.routerSubscription) {
-      this.routerSubscription.unsubscribe();
-    }
   }
 
 }

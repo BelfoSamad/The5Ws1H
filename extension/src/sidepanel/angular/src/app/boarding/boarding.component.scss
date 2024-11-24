@@ -1,0 +1,28 @@
+.boarding-container {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.logo {
+    text-align: center;
+    font-size: 32px;
+    color: var(--sys-secondary);
+    font-family: "Protest Guerrilla", sans-serif;
+}
+
+.boarding-message {
+    font-family: "Poppins", sans-serif;
+    width: 90%;
+    font-weight: 700;
+    font-size: 16px;
+}

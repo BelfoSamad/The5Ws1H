@@ -5,13 +5,13 @@ import {RegisterComponent} from './auth/register/register.component';
 import {HistoryComponent} from './history/history.component';
 import {ArticleComponent} from './history/article/article.component';
 import {AuthGuard} from './services/auth.guard';
+import {BoardingComponent} from './boarding/boarding.component';
 
 export const routes: Routes = [
     {
-        path: '',
-        component: HomeComponent,
-        title: 'Home',
-        canActivate: [AuthGuard]
+        path: 'boarding',
+        component: BoardingComponent,
+        title: 'Boarding'
     },
     {
         path: 'login',
@@ -22,6 +22,12 @@ export const routes: Routes = [
         path: 'register',
         component: RegisterComponent,
         title: 'Register'
+    },
+    {
+        path: '',
+        component: HomeComponent,
+        title: 'Home',
+        canActivate: [AuthGuard]
     },
     {
         path: 'history',
