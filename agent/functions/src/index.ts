@@ -89,7 +89,6 @@ export const summarizeArticleFlow = debug ? ai.defineFlow(
         }),
         authPolicy: firebaseAuth((user) => {
             if (!user) throw Error("ERROR::AUTH");
-            else if (!user.email_verified) throw Error("ERROR::VERIFICATION");
         }),
     },
     doSummarizeArticleFlow,
@@ -155,7 +154,6 @@ export const indexArticleFlow = debug ? ai.defineFlow(
         outputSchema: z.string(),
         authPolicy: firebaseAuth((user) => {
             if (!user) throw Error("ERROR::AUTH");
-            else if (!user.email_verified) throw Error("ERROR::VERIFICATION");
         }),
     },
     doIndexArticleFlow,
@@ -217,7 +215,6 @@ export const expandOnArticleFlow = debug ? ai.defineFlow(
         outputSchema: z.string(),
         authPolicy: firebaseAuth((user) => {
             if (!user) throw Error("ERROR::AUTH");
-            else if (!user.email_verified) throw Error("ERROR::VERIFICATION");
         }),
     },
     doExpandOnArticleFlow,
