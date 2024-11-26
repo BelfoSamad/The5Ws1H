@@ -1,10 +1,8 @@
 import {Firestore} from "firebase-admin/firestore";
+import { SummarySchema } from "../index";
+import {z} from "genkit";
 
 // ----------------------------------------- Firestore Utilities
-export async function getUser(firestore: Firestore, userId: string) {
-    return (await firestore.collection("users").doc(userId).get()).data();
-}
-
 export async function getArticle(firestore: Firestore, articleId: string) {
     return (await firestore.collection("articles").doc(articleId).get()).data();
 }
@@ -19,10 +17,7 @@ export async function addArticle(
     firestore: Firestore,
     title: string,
     url: string,
-    result: {
-        error?: string,
-        summary?: { what?: string, who?: string, why?: string, where?: string, when?: string, how?: string }
-    },
+    result: z.infer<typeof SummarySchema>,
     on: Date
 ): Promise<string> {
     return (await firestore.collection("articles").add({
@@ -30,7 +25,7 @@ export async function addArticle(
         title: title,
         createdAt: on,
         indexed: false,
-        summary: result.summary,
+        summary: result,
     })).id;
 }
 
@@ -45,12 +40,4 @@ export async function updateArticle(
         answer: answer,
         createdAt: new Date(),
     });
-}
-
-export async function updateCredit(
-    firestore: Firestore,
-    userId: string,
-    credit: number
-) {
-    await firestore.collection("users").doc(userId).update({credit: credit});
 }
