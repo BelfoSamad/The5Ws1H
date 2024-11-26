@@ -14,7 +14,16 @@ input:
   schema:
     article: string
 output:
-  schema: ArticleSummarySchema
+  format: json
+  schema:
+    error?: string,
+    summary?:
+      what?: string, Briefly state the primary event or topic covered by the article.
+      who?: string, Identify the key people, organizations, or entities involved in "what" happened.
+      where?: string, Specify the location where the event or topic is centered.
+      when?: string, Mention the time or date relevant to the topic.
+      why?: string, Explain the reason or cause behind the event or topic.
+      how?: string, Describe how the event occurred or how the situation developed.
 ---
 Summarize the content of the provided article into the schema provided below. Follow these specific guidelines:
 

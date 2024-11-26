@@ -1,6 +1,4 @@
 import {Firestore} from "firebase-admin/firestore";
-import { SummarySchema } from "../index";
-import {z} from "genkit";
 
 // ----------------------------------------- Firestore Utilities
 export async function getArticle(firestore: Firestore, articleId: string) {
@@ -8,7 +6,7 @@ export async function getArticle(firestore: Firestore, articleId: string) {
 }
 
 export async function setArticleIndexed(firestore: Firestore, articleId: string) {
-    await firestore.collection("articles").doc(articleId).update({
+    firestore.collection("articles").doc(articleId).update({
         indexed: true,
     });
 }
@@ -17,7 +15,7 @@ export async function addArticle(
     firestore: Firestore,
     title: string,
     url: string,
-    result: z.infer<typeof SummarySchema>,
+    result: any,
     on: Date
 ): Promise<string> {
     return (await firestore.collection("articles").add({
@@ -25,7 +23,7 @@ export async function addArticle(
         title: title,
         createdAt: on,
         indexed: false,
-        summary: result,
+        summary: result.summary,
     })).id;
 }
 
@@ -35,7 +33,7 @@ export async function updateArticle(
     query: string,
     answer: string
 ) {
-    await firestore.collection("articles").doc(articleId).collection("questions").add({
+    firestore.collection("articles").doc(articleId).collection("questions").add({
         question: query,
         answer: answer,
         createdAt: new Date(),

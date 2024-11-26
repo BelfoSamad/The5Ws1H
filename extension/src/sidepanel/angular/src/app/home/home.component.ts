@@ -77,7 +77,8 @@ export class HomeComponent implements OnInit {
   }
 
   summarizeArticle() {
-    this.summarizerService.summarizeArticle();
+    if (this.url != null) this.summarizerService.summarizeArticle(this.url!);
+    else this._snackBar.open("No Article URL found! Refresh page to get URL!");
   }
 
   summaryClosed() {

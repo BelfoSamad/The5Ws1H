@@ -19,7 +19,7 @@
     font-family: "Poppins", sans-serif;
     font-weight: 500;
     margin: 8px 0;
-    width: 420px;
+    width: 90%;
     flex: 1;
     text-align: start;
     overflow: hidden;
@@ -28,8 +28,8 @@
 }
 
 .animated-gradient {
-    width: 420px;
-    height: 320px;
+    width: 90%;
+    height: 256px;
     border-radius: 16px;
     
     background: linear-gradient(90deg, var(--sys-primary), var(--sys-secondary));
@@ -52,8 +52,8 @@
 }
 
 .content-card {
-    width: 420px;
-    height: 320px;
+    width: 90%;
+    height: 256px;
 }
 
 .question {

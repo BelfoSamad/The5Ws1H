@@ -15,8 +15,8 @@ export class SummarizerService {
     );
   }
 
-  summarizeArticle() {
-    chrome.runtime.sendMessage({target: "background", action: "summarize"});
+  summarizeArticle(url: string) {
+    chrome.runtime.sendMessage({target: "background", action: "summarize", url: url});
   }
 
   async indexArticle(articleId: string) {

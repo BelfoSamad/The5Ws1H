@@ -1,15 +1,17 @@
-import {z, genkit} from 'genkit';
+import {retrieve} from "@genkit-ai/ai";
+import {configureGenkit} from "@genkit-ai/core";
 import {
     gemini15Flash,
     googleAI,
     textEmbeddingGecko001,
 } from "@genkit-ai/googleai";
-import {defineFirestoreRetriever} from "@genkit-ai/firebase";
+import {defineFirestoreRetriever, firebase} from "@genkit-ai/firebase";
 import {applicationDefault, initializeApp} from "firebase-admin/app";
 import {firebaseAuth} from "@genkit-ai/firebase/auth";
 import {FieldValue, getFirestore} from "firebase-admin/firestore";
 import {onFlow} from "@genkit-ai/firebase/functions";
 import {defineSecret} from "firebase-functions/params";
+import {dotprompt, promptRef} from "@genkit-ai/dotprompt";
 import {
     addArticle,
     getArticle,
@@ -18,7 +20,10 @@ import {
 } from "./tools/firestore";
 import {getChuckedDocuments} from "./tools/chunker";
 import {getContentFromUrl} from "./tools/pdf";
+import * as z from "zod";
+import {embed} from "@genkit-ai/ai/embedder";
 import {credential} from "firebase-admin";
+import {defineFlow, startFlowsServer} from "@genkit-ai/flow";
 import {extractTextFromPdf} from "./tools/storage";
 import {config} from "dotenv";
 
@@ -26,16 +31,16 @@ import {config} from "dotenv";
 const googleAiApiKey = defineSecret("GOOGLE_GENAI_API_KEY");
 
 // ----------------------------------------- Initializations
-const debug = true;
+const debug = false;
 const app = initializeApp({credential: debug ? credential.cert("./firebase-creds.json") : applicationDefault()});
 const firestore = getFirestore(app);
-/*if (debug) {
+if (debug) {
     firestore.settings({
         host: "localhost",
         port: 8080,
         ssl: false,
     });
-}*/
+}
 const indexConfig = {
     contentField: "text",
     vectorField: "embedding",
@@ -44,35 +49,18 @@ const indexConfig = {
 
 // ----------------------------------------- Configurations
 if (debug) config();
-const ai = genkit({
-    promptDir: "./prompts",
+configureGenkit({
     plugins: [
-        debug ? googleAI({apiKey: process.env.GENAI_API_KEY}) : googleAI(),
+        debug ? firebase({projectId: "insightful-4ee75"}) : firebase(),
+        dotprompt(),
+        debug ? googleAI({apiKey: process.env.GOOGLE_GENAI_API_KEY}) : googleAI(),
     ],
+    logLevel: debug ? "debug" : "info",
+    enableTracingAndMetrics: true,
 });
 
-// ----------------------------------------- Schemas
-export const SummarySchema = ai.defineSchema(
-    "Summary",
-    z.object({
-        what: z.string().describe("Briefly state the primary event or topic covered by the article.").optional(),
-        who: z.string().describe("Identify the key people, organizations, or entities involved in \"what\" happened.").optional(),
-        where: z.string().describe("Specify the location where the event or topic is centered.").optional(),
-        when: z.string().describe("Mention the time or date relevant to the topic.").optional(),
-        why: z.string().describe("Explain the reason or cause behind the event or topic.").optional(),
-        how: z.string().describe("Describe how the event occurred or how the situation developed.").optional(),
-    }),
-)
-export const ArticleSchema = ai.defineSchema(
-    "Article",
-    z.object({
-        error: z.string().optional(),
-        summary: SummarySchema.optional(),
-    })
-);
-
 // ----------------------------------------- Flows
-export const summarizeArticleFlow = debug ? ai.defineFlow(
+export const summarizeArticleFlow = debug ? defineFlow(
     {
         name: "summarizeArticleFlow",
         inputSchema: z.object({
@@ -81,13 +69,12 @@ export const summarizeArticleFlow = debug ? ai.defineFlow(
         }),
         outputSchema: z.object({
             articleId: z.string(),
-            createdAt: z.string(),
-            summary: SummarySchema,
+            createdAt: z.date(),
+            summary: z.map(z.string(), z.string()),
         }),
     },
     doSummarizeArticleFlow,
 ) : onFlow(
-    ai,
     {
         name: "summarizeArticleFlow",
         httpsOptions: {
@@ -100,8 +87,8 @@ export const summarizeArticleFlow = debug ? ai.defineFlow(
         }),
         outputSchema: z.object({
             articleId: z.string(),
-            createdAt: z.string(),
-            summary: SummarySchema,
+            createdAt: z.date(),
+            summary: z.map(z.string(), z.string()),
         }),
         authPolicy: firebaseAuth((user) => {
             if (!user) throw Error("ERROR::AUTH");
@@ -110,16 +97,16 @@ export const summarizeArticleFlow = debug ? ai.defineFlow(
     doSummarizeArticleFlow,
 );
 
-async function doSummarizeArticleFlow(input: {userId: string, url: string}) {
+async function doSummarizeArticleFlow(input: any) {
     // ------------------------ Get Article
     const article = debug ? await extractTextFromPdf("article.pdf") : await getContentFromUrl(input.url);
 
     // ------------------------ Summarize Article
-    const summarizeArticlePrompt = ai.prompt<z.ZodTypeAny, typeof ArticleSchema, z.ZodTypeAny>("summarize_article");
-    const result = (await summarizeArticlePrompt({article: article.content})).output!;
+    const summarizeArticlePrompt = promptRef("summarize_article");
+    const result = (await summarizeArticlePrompt.generate({input: {article: article.content}})).output();
 
-    // return error if failure, if result is not of type Summary
-    if (!SummarySchema.safeParse(result).success) throw Error(result.error);
+    // return error if failure
+    if (result.error != null) throw Error(result.error);
 
     // ------------------------ Save Summary
     const createdAt = new Date();
@@ -127,7 +114,7 @@ async function doSummarizeArticleFlow(input: {userId: string, url: string}) {
         firestore,
         article.title,
         input.url,
-        result as z.infer<typeof SummarySchema>,
+        result,
         createdAt,
     );
 
@@ -135,13 +122,12 @@ async function doSummarizeArticleFlow(input: {userId: string, url: string}) {
     return {
         articleId: articleId,
         title: article.title,
-        summary: result as z.infer<typeof SummarySchema>,
-        createdAt: createdAt.toDateString(),
+        summary: result.summary,
+        createdAt: createdAt,
     };
-
 }
 
-export const indexArticleFlow = debug ? ai.defineFlow(
+export const indexArticleFlow = debug ? defineFlow(
     {
         name: "indexArticleFlow",
         inputSchema: z.object({
@@ -151,7 +137,6 @@ export const indexArticleFlow = debug ? ai.defineFlow(
     },
     doIndexArticleFlow
 ) : onFlow(
-    ai,
     {
         name: "indexArticleFlow",
         httpsOptions: {
@@ -184,7 +169,7 @@ async function doIndexArticleFlow(input: {articleId: string}) {
 
     // ------------------------ Index Content
     for (const text of chunks) {
-        const embedding = await ai.embed({
+        const embedding = await embed({
             embedder: indexConfig.embedder,
             content: text,
         });
@@ -195,12 +180,12 @@ async function doIndexArticleFlow(input: {articleId: string}) {
     }
 
     // update database (Article is now indexed)
-    await setArticleIndexed(firestore, input.articleId);
+    setArticleIndexed(firestore, input.articleId);
 
     return "DONE"; // response only to avoid Error: Response is missing data field.
 }
 
-export const expandOnArticleFlow = debug ? ai.defineFlow(
+export const expandOnArticleFlow = debug ? defineFlow(
     {
         name: "expandOnArticleFlow",
         inputSchema: z.object({
@@ -211,7 +196,6 @@ export const expandOnArticleFlow = debug ? ai.defineFlow(
     },
     doExpandOnArticleFlow,
 ) : onFlow(
-    ai,
     {
         name: "expandOnArticleFlow",
         httpsOptions: {
@@ -231,8 +215,7 @@ export const expandOnArticleFlow = debug ? ai.defineFlow(
 );
 
 async function doExpandOnArticleFlow(input: {articleId: string, query: string}) {
-    // ------------------------ Ask Question
-    const articleRetrieverRef = defineFirestoreRetriever(ai, {
+    const articleRetrieverRef = defineFirestoreRetriever({
         name: "articleRetriever",
         firestore: firestore,
         collection: `articles/${input.articleId}/index`,
@@ -242,24 +225,31 @@ async function doExpandOnArticleFlow(input: {articleId: string, query: string}) 
         distanceMeasure: "COSINE", // "EUCLIDEAN", "DOT_PRODUCT", or "COSINE" (default)
     });
 
+    // ------------------------ Ask Question
     // retrieve extra context
-    const context = await ai.retrieve({
+    const context = await retrieve({
         retriever: articleRetrieverRef,
         query: input.query,
-        options: {limit: 3},
+        options: {
+            limit: 3,
+            collection: `articles/${input.articleId}/index`,
+        },
     });
 
     // ask question w/ context
-    const askQuestionPrompt = ai.prompt("ask_question");
+    const askQuestionPrompt = promptRef("ask_question");
     const result = (
-        await askQuestionPrompt({query: input.query}, {config: {context: context}})
+        await askQuestionPrompt.generate({
+            input: {query: input.query},
+            context: context,
+        })
     ).output();
 
     // return error if failure
-    if (result.error != null) throw Error(result.error);
+    if (result.error != null) throw Error(result.error.message!);
 
     // ------------------------ Save Question/Answer
-    await updateArticle(
+    updateArticle(
         firestore,
         input.articleId,
         input.query,
@@ -271,5 +261,4 @@ async function doExpandOnArticleFlow(input: {articleId: string, query: string}) 
 }
 
 // ----------------------------------------- Start
-const flows = [summarizeArticleFlow, indexArticleFlow, expandOnArticleFlow]
-if (debug) ai.startFlowServer({flows});
+if (debug) startFlowsServer();

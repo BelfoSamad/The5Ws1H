@@ -1,6 +1,6 @@
 import {app} from '../configs';
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth/web-extension';
-import {getFirestore, getDocs, setDoc, doc} from 'firebase/firestore';
+import {getFirestore, getDocs, setDoc, doc, query, collection, where, orderBy} from 'firebase/firestore';
 import {getFunctions, httpsCallable} from 'firebase/functions';
 
 const auth = getAuth(app);
@@ -52,10 +52,11 @@ function handleChromeMessages(message, _sender, sendResponse) {
             (async () => {
                 try {
                     const url = message.url
-                    getDocs(query(collection(db, "articles"), where("url", "==", url))).then(async querySnapshot => {
+                    console.log(url);
+                    await getDocs(query(collection(db, "articles"), where("url", "==", url))).then(async querySnapshot => {
                         if (querySnapshot.empty) {
-                            const analyzeWebsite = httpsCallable(functions, 'analyzeWebsiteFlow');
-                            analyzeWebsite({url: url}).then(res => {
+                            const summarizeArticle = httpsCallable(functions, 'summarizeArticleFlow');
+                            summarizeArticle({url: url}).then(res => {
                                 const result = res.data;
                                 const article = {
                                     articleId: result.articleId,
@@ -86,11 +87,11 @@ function handleChromeMessages(message, _sender, sendResponse) {
                                     }
                                 })
                             };
-                            sendResponse({error: null, article: article})
+                            sendResponse({error: null, article: article});
                         }
                     });
                 } catch (e) {
-                    sendResponse({error: e.message, article: null})
+                    sendResponse({error: e.message, article: null});
                 }
             })();
             return true;
@@ -99,7 +100,7 @@ function handleChromeMessages(message, _sender, sendResponse) {
                 try {
                     getDocs(query(collection(db, "articles"), where("__name__", "in", articleIds))).then(async querySnapshot => {
                         let articles = []
-                        for (const snapshot of QuerySnapshot.docs) {
+                        for (const snapshot of querySnapshot.docs) {
                             const articleData = snapshot.data()
                             const questionsQuery = query(collection(db, `articles/${snapshot.id}/questions`), orderBy("createdAt", "asc"))
                             articles.push({

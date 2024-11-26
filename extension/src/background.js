@@ -9,7 +9,7 @@ const tabUrls = new Map();
 //------------------------------- Starting
 setupOffscreenDocument("./offscreen/offscreen.html");
 chrome.sidePanel.setPanelBehavior({openPanelOnActionClick: true}).catch((error) => console.error(error));
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener(async (message) => {
     if (message.target == "background") {
         switch (message.action) {
             case "init":
@@ -17,23 +17,18 @@ chrome.runtime.onMessage.addListener((message) => {
                 sendUrl(tabUrls.get(activeTabId));
                 break;
             case "summarize":
-                // get active tab's URL (RODO: Remove this check, receive URL here)
-                chrome.tabs.query({active: true, currentWindow: true}, (activeTabs) => {
-                    const activeTab = activeTabs[0];
+                // start animations
+                startAnimations(activeTabId);
 
-                    // start animations
-                    startAnimations(activeTab.id);
+                // summarize article
+                const result = await summarizeArticle(message.url);
+                sendResult(result);
 
-                    // summarize article
-                    const result = summarizeArticle(activeTab.url);
-                    sendResult(result);
+                // set locally
+                if (result.error == null) tabArticles.set(activeTabId, result.article);
 
-                    // set locally
-                    if (result.error == null) tabArticles.set(activeTabId, result.article);
-
-                    // stop animations
-                    stopAnimations(activeTab.id);
-                });
+                // stop animations
+                stopAnimations(activeTabId);
                 break;
         }
     }
