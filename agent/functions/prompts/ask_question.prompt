@@ -1,5 +1,5 @@
 ---
-model: googleai/gemini-1.5-flash-latest
+model: googleai/gemini-1.5-flash
 config:
   safetySettings:
     - category: HARM_CATEGORY_HARASSMENT
@@ -10,29 +10,12 @@ config:
       threshold: BLOCK_NONE
     - category: HARM_CATEGORY_DANGEROUS_CONTENT
       threshold: BLOCK_NONE
-
 input:
   schema:
-    article: string
+    query: string
 output:
-  format: json
   schema:
-    error?: string,
-    summary?:
-      what?: string, Briefly state the primary event or topic covered by the article.
-      who?: string, Identify the key people, organizations, or entities involved in "what" happened.
-      where?: string, Specify the location where the event or topic is centered.
-      when?: string, Mention the time or date relevant to the topic.
-      why?: string, Explain the reason or cause behind the event or topic.
-      how?: string, Describe how the event occurred or how the situation developed.
+    answer: string, the answer for the question asked
 ---
-Summarize the content of the provided article into the schema provided below. Follow these specific guidelines:
-
-- Is it an article?: If the content is not an article but instead seems to be random webpage content (e.g., a product page, blog post, or advertisement), respond with: 'Error: The provided content is not a news article.'
-- All answers should be string. If multiple answers are available, split them by comma.
-- Concise Answers: Keep each answer focused strictly on its respective question. For example, for "Who" simply list the involved parties without adding context like their role or location.
-- Handling Missing Information: If the article does not provide sufficient information to answer a specific question, leave that answer blank.
-
-### The article
-{{article}}
-###
+Answer the question based on the context provided. Keep the answer short and concise. Return an error saying "Error::NO_CONTEXT" if you can't answer the question with the context provided.
+Question: {{ query }}
