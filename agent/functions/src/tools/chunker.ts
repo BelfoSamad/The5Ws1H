@@ -60,6 +60,6 @@ export async function getChuckedDocuments(fullText: string, model: string, debug
 }
 
 async function calculateToken(text: string, model: string): Promise<number> {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+    const genAI = new GoogleGenerativeAI(process.env.GENAI_API_KEY!);
     return (await genAI.getGenerativeModel({model: model}).countTokens(text)).totalTokens;
 }
