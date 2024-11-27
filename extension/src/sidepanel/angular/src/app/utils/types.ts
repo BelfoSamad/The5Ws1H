@@ -1,3 +1,12 @@
+export interface Summary {
+    what: string,
+    who: string[],
+    where: string[],
+    why: string,
+    when: string,
+    how: string
+}
+
 export interface Expansion {
     question: string,
     answer: string
@@ -9,6 +18,6 @@ export interface Article {
     title: string,
     createdAt: Date,
     indexed: boolean,
-    summary: Map<string, string>,
+    summary: Summary,
     expansion: Expansion[] | undefined
 }

@@ -59,6 +59,12 @@
     padding: 0 16px;
 }
 
+.clickable-answer {
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.3s;
+}
+
 .scroll-container {
     display: flex;
     justify-content: space-between;
@@ -90,7 +96,8 @@ button[disabled] {
 }
 
 //------------------------ Expansion Section
-mat-card-content, mat-card-content:first-child {
+mat-card-content,
+mat-card-content:first-child {
     padding: 0;
 }
 

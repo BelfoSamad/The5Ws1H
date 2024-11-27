@@ -15,7 +15,7 @@
                     (click)="indexArticle()">
                     <span class="mat-label-large">Index Article</span>
                 </button>
-                <p  class="mat-body-large" *ngIf="isIndexed && expansion.length == 0">No questions available yet.</p>
+                <p class="mat-body-large" *ngIf="isIndexed && expansion.length == 0">No questions available yet.</p>
                 <div class="message" *ngFor="let exp of expansion">
                     <div class="message-bubble expansion-question"> {{ exp.question }}</div>
                     <div class="message-bubble expansion-answer">{{ exp.answer }}</div>
@@ -49,15 +49,29 @@
         </mat-card-footer>
     </mat-card>
     } @else {
-    <mat-card appearance="raised" class="content-card">
-        <mat-card-header>
-            <mat-card-title class="question mat-headline-large">{{ summaries.length > 0 ?
-                summaries[currentIndex][0].toUpperCase() : 'ERROR!' }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="answer mat-body-large">
-            <span>{{ summaries.length > 0 ? summaries[currentIndex][1] : 'Error Loading Article' }}</span>
-        </mat-card-content>
-    </mat-card>
+    @if (summaries.length == 0) {
+        <mat-card appearance="raised" class="content-card">
+            <mat-card-header>
+                <mat-card-title class="question mat-headline-large">ERROR!</mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="answer mat-body-large"><span>Error Loading Article</span></mat-card-content>
+        </mat-card>
+    } @else {
+        <mat-card appearance="raised" class="content-card">
+            <mat-card-header>
+                <mat-card-title class="question mat-headline-large">{{ summaries[currentIndex].question }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="answer mat-body-large">
+                @if (isArray(summaries[currentIndex].answer)) {
+                    @for(item of summaries[currentIndex].answer; track item) {
+                        <span class="clickable-answer" (click)="onAnswerClick(item)">{{item}}</span>, 
+                    }
+                } @else {
+                    <span>{{ summaries[currentIndex].answer }}</span>
+                }
+            </mat-card-content>
+        </mat-card>
+    }
     }
     <div class="scroll-container" *ngIf="summaries.length > 0">
         <div class="indicators">

@@ -1,5 +1,5 @@
 import {Component, ElementRef, EventEmitter, inject, Input, OnChanges, Output, Renderer2, SimpleChanges, ViewChild} from '@angular/core';
-import {Article, Expansion} from '../utils/types';
+import {Article, Expansion, Summary} from '../utils/types';
 import {MatCardModule} from '@angular/material/card';
 import {CommonModule} from '@angular/common';
 import {MatIconModule} from '@angular/material/icon';
@@ -39,7 +39,7 @@ export class SummaryComponent implements OnChanges {
   @Input() article: Article | null = null;
 
   //Data
-  summaries: [string, string][] = [];
+  summaries: any[] = [];
   expansion: Expansion[] = [];
   currentIndex = 0;
   isIndexed = false;
@@ -51,8 +51,13 @@ export class SummaryComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.article != null) {
-      this.summaries = Object.entries(this.article!.summary).filter(item => item[1].trim() !== '');
-      this.expansion = this.article!.expansion ?? []
+      this.summaries = Object.entries(this.article!.summary).map(([key, value]) => {
+        if (value.length > 0) return {
+          question: key.toUpperCase(),
+          answer: value
+        }; else return null;
+      }).filter(item => item !== null);
+      this.expansion = this.article?.expansion ?? []
       this.isIndexed = this.article!.indexed
     }
   }
@@ -102,5 +107,13 @@ export class SummaryComponent implements OnChanges {
       this.currentIndex++;
       if (this.currentIndex == this.summaries.length) setTimeout(() => {this.scrollToBottom();}, 1)
     }
+  }
+
+  isArray(element: any) {
+    return Array.isArray(element)
+  }
+
+  onAnswerClick(answer: string) {
+    //TODO: Use clicked answer properly
   }
 }
