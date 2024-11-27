@@ -42,10 +42,10 @@ export class HistoryComponent implements OnInit {
   constructor(private router: Router, private summarizerService: SummarizerService, private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.summarizerService.getHistory().then(articles => {
+    this.summarizerService.getHistory().then(result => {
       this.loading = false;
       // group data
-      this.groupedArticles = this.groupByDate(articles);
+      this.groupedArticles = this.groupByDate(result.articles ?? []);
       this.empty = JSON.stringify(this.groupedArticles) === '{}'
       if (!this.empty) this.sortedKeys = Object.keys(this.groupedArticles).sort((a, b) => b.localeCompare(a));
     }).catch(err => {
@@ -55,7 +55,7 @@ export class HistoryComponent implements OnInit {
 
   groupByDate(items: Article[]): {[key: string]: Article[]} {
     return items.reduce((groups: any, item) => {
-      const date = this.formatDate(item.createdAt);
+      const date = this.formatDate(new Date(item.createdAt));
       if (!groups[date]) {
         groups[date] = [];
       }

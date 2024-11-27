@@ -66,6 +66,7 @@ export class HomeComponent implements OnInit {
               if (tabDetails.article !== undefined) {
                 this.summarizeLoading = false; // stop animation
                 this.article = tabDetails.article; // get article (either object or null)
+                if (tabDetails.article !== null) this.summarizerService.saveArticleIdLocally(tabDetails.article.articleId)
 
                 // logout if AUTH error or show the error message
                 if (tabDetails.error == "ERROR::AUTH") this.logout();

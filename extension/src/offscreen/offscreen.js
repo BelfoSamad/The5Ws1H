@@ -1,6 +1,6 @@
 import {app} from '../configs';
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth/web-extension';
-import {getFirestore, getDocs, setDoc, doc, query, collection, where, orderBy} from 'firebase/firestore';
+import {getFirestore, getDoc, getDocs, setDoc, doc, query, collection, where, orderBy} from 'firebase/firestore';
 import {getFunctions, httpsCallable} from 'firebase/functions';
 
 const auth = getAuth(app);
@@ -33,8 +33,7 @@ function handleChromeMessages(message, _sender, sendResponse) {
                 try {
                     let userCreds = await signInWithEmailAndPassword(auth, message.email, message.password);
                     getDoc(doc(db, "users", userCreds.user.uid)).then(async querySnapshot => {
-                        if (querySnapshot.exists()) chrome.storage.local.set({articleIds: JSON.stringify(querySnapshot.data()['articleIds'])});
-                        sendResponse({done: true});
+                        sendResponse({done: true, articleIds: querySnapshot.exists() ? querySnapshot.data()['articleIds'] : []});
                     });
                 } catch (e) {
                     sendResponse({done: false, error: e.message});
@@ -99,6 +98,7 @@ function handleChromeMessages(message, _sender, sendResponse) {
         case "history":
             (async () => {
                 try {
+                    const articleIds = message.articleIds;
                     getDocs(query(collection(db, "articles"), where("__name__", "in", articleIds))).then(async querySnapshot => {
                         let articles = []
                         for (const snapshot of querySnapshot.docs) {

@@ -39,3 +39,11 @@ export async function updateArticle(
         createdAt: new Date(),
     });
 }
+
+export async function setArticleHistory(firestore: Firestore, userId: string, articleId: string) {
+    const user = (await firestore.collection("users").doc(userId).get()).data();
+    let articleIds = user?.articleIds;
+    if (articleIds == null) articleIds = [articleId];
+    else articleIds.push(articleId);
+    firestore.collection("users").doc(userId).update({articleIds: articleIds});
+}

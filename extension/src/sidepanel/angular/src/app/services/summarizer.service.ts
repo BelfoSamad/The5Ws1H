@@ -28,7 +28,16 @@ export class SummarizerService {
   }
 
   async getHistory() {
-    return chrome.runtime.sendMessage({target: "offscreen", action: "history"});
+    const prefs = await chrome.storage.local.get(["articleIds"]);
+    return chrome.runtime.sendMessage({target: "offscreen", action: "history", articleIds: prefs["articleIds"]});
+  }
+
+  async saveArticleIdLocally(articleId: string) {
+    const articleIds = (await chrome.storage.local.get(["articleIds"]))["articleIds"];
+    console.log(articleIds);
+    if (!articleIds.includes(articleIds)) articleIds.push(articleId);
+    console.log(articleIds);
+    await chrome.storage.local.set({articleIds: articleIds});
   }
 
 }

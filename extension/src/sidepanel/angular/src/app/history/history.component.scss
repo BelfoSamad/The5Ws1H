@@ -1,12 +1,14 @@
 .container {
     display: flex;
     flex-direction: column;
+    padding: 0 8px;
     height: 100%;
 }
 
 mat-toolbar {
     background-color: transparent;
     padding-right: 0px;
+    padding-left: 8px;
     padding-top: 16px;
 }
 
@@ -27,6 +29,7 @@ mat-toolbar h4 {
     flex-direction: column;
     gap: 0.50rem;
     text-align: center;
+    margin-top: 16px;
 }
 
 .date {

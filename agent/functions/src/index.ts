@@ -5,7 +5,7 @@ import {applicationDefault, initializeApp} from "firebase-admin/app";
 import {firebaseAuth} from "@genkit-ai/firebase/auth";
 import {FieldValue, getFirestore} from "firebase-admin/firestore";
 import {defineSecret} from "firebase-functions/params";
-import {addArticle, getArticle, setArticleIndexed, updateArticle} from "./tools/firestore";
+import {addArticle, getArticle, setArticleHistory, setArticleIndexed, updateArticle} from "./tools/firestore";
 import {getChuckedDocuments} from "./tools/chunker";
 import {getContentFromUrl} from "./tools/pdf";
 import {credential} from "firebase-admin";
@@ -106,6 +106,9 @@ async function doSummarizeArticleFlow(input: any) {
         result,
         createdAt,
     );
+
+    // Set Article as History
+    setArticleHistory(firestore, input.userId, articleId);
 
     // Return Article
     return {

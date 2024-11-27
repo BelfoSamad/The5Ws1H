@@ -22,6 +22,10 @@ export class AuthService {
     });
   }
 
+  saveArticleIds(articleIds: string[]) {
+    chrome.storage.local.set({articleIds: articleIds})
+  }
+
   async isLoggedIn() {
     return new Promise((resolve) => {
       chrome.runtime.sendMessage({target: "offscreen", action: "isLoggedIn"}, (response) => {

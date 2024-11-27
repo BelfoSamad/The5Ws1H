@@ -15,7 +15,19 @@
                     (click)="indexArticle()">
                     <span class="mat-label-large">Index Article</span>
                 </button>
-                <p *ngIf="isIndexed && expansion.length == 0">No questions available yet.</p>
+                <p  class="mat-body-large" *ngIf="isIndexed && expansion.length == 0">No questions available yet.</p>
+                <div class="message" *ngFor="let exp of expansion">
+                    <div class="message-bubble expansion-question"> {{ exp.question }}</div>
+                    <div class="message-bubble expansion-answer">{{ exp.answer }}</div>
+                </div>
+                <div class="message" *ngFor="let exp of expansion">
+                    <div class="message-bubble expansion-question"> {{ exp.question }}</div>
+                    <div class="message-bubble expansion-answer">{{ exp.answer }}</div>
+                </div>
+                <div class="message" *ngFor="let exp of expansion">
+                    <div class="message-bubble expansion-question"> {{ exp.question }}</div>
+                    <div class="message-bubble expansion-answer">{{ exp.answer }}</div>
+                </div>
                 <div class="message" *ngFor="let exp of expansion">
                     <div class="message-bubble expansion-question"> {{ exp.question }}</div>
                     <div class="message-bubble expansion-answer">{{ exp.answer }}</div>
