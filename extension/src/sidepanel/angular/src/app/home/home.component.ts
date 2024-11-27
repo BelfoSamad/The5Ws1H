@@ -86,10 +86,6 @@ export class HomeComponent implements OnInit {
     else this._snackBar.open("No Article URL found! Reload page to get URL!");
   }
 
-  summaryClosed() {
-    this.summarizeLoading = undefined;
-  }
-
   goHistory() {
     this.router.navigate(['history']);
   }

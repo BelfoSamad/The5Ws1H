@@ -1,15 +1,10 @@
 <div class="container">
     @if(isLoading) {
-    <p class="title mat-title-large">Getting Article...</p>
-    <p class="subtitle mat-title-medium">Summarizing...</p>
+    <p class="title mat-title-medium">Summarizing...</p>
     <div class="animated-gradient"></div>
     } @else {
-    <p class="title mat-title-medium">{{ article?.title ?? 'Getting Article...'}}</p>
     <div class="top-summary">
-        <p class="subtitle mat-title-medium">{{ article?.url ?? 'Error Summarizing :(' }}</p>
-        <button mat-icon-button *ngIf="isHome" (click)="closeSummary()">
-            <mat-icon>close</mat-icon>
-        </button>
+        <p class="title mat-title-medium">{{ article?.url ?? 'Error Summarizing :(' }}</p>
     </div>
     @if(currentIndex == summaries.length) {
     <mat-card appearance="outlined" class="questions-card">
@@ -44,7 +39,7 @@
     } @else {
     <mat-card appearance="raised" class="content-card">
         <mat-card-header>
-            <mat-card-title class="question mat-display-small">{{ summaries.length > 0 ?
+            <mat-card-title class="question mat-headline-large">{{ summaries.length > 0 ?
                 summaries[currentIndex][0].toUpperCase() : 'ERROR!' }}</mat-card-title>
         </mat-card-header>
         <mat-card-content class="answer mat-body-large">

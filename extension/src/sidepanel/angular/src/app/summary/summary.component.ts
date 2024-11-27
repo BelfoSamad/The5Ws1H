@@ -29,7 +29,6 @@ import {MatInputModule} from '@angular/material/input';
 })
 export class SummaryComponent implements OnChanges {
   private _snackBar = inject(MatSnackBar);
-  @Output() closedEvent = new EventEmitter<void>();
 
   //Views
   @ViewChild('conversation') private conversation!: ElementRef;
@@ -104,9 +103,5 @@ export class SummaryComponent implements OnChanges {
       this.currentIndex++;
       if (this.currentIndex == this.summaries.length) setTimeout(() => {this.scrollToBottom();}, 1)
     }
-  }
-
-  closeSummary() {
-    this.closedEvent.emit()
   }
 }

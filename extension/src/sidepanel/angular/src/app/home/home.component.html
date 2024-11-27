@@ -15,15 +15,15 @@
         @if (summarizeLoading === undefined) {
         <p class="prompt mat-body-large">The Article:<br />
             <span [ngClass]="url == null ? 'loading-url mat-body-large' : 'mat-body-medium'">{{title === undefined ?
-                "Not detected, Reload Page!" : title === null ? "This is a Chrome related page, Reload Page!" : title}}</span>
+                "Not detected, Reload Page!" : title === null ? "This is a Chrome page, Reload Page!" : title}}</span>
         </p>
         <!-- Scan/Summarize Button -->
         <button class="summarize" mat-flat-button (click)="summarizeArticle()">
             <span class="mat-label-large">Summarize</span>
         </button>
         } @else {
-        <app-summary (closedEvent)="summaryClosed()" [isLoading]="summarizeLoading" [article]="article"
-            [isHome]="true"></app-summary>
+        <app-summary style="width: 100%;" [isLoading]="summarizeLoading" [article]="article" [isHome]="true"
+            class="summary"></app-summary>
         }
     </div>
 </div>

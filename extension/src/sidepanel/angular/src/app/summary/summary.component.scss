@@ -5,17 +5,12 @@
     height: 100%;
 }
 
-.title {
-    font-family: "Poppins", sans-serif;
-    font-weight: 700;
-}
-
 .top-summary {
     display: flex;
     flex-direction: row;
 }
 
-.subtitle {
+.title {
     font-family: "Poppins", sans-serif;
     font-weight: 500;
     margin: 8px 0;
@@ -52,8 +47,7 @@
 }
 
 .content-card {
-    width: 90%;
-    height: 256px;
+    height: 324px;
 }
 
 .question {
@@ -105,7 +99,7 @@ mat-card-content, mat-card-content:first-child {
 
 .conversation-container {
     flex: 1;
-    height: 224px;
+    height: 256px;
     overflow-y: auto;
     align-content: center;
     text-align: center;
@@ -188,7 +182,6 @@ mat-error {
     display: inline-flex;
     align-self: center;
     width: 196px;
-    margin-bottom: 48px;
     padding-top: 24px;
     padding-bottom: 24px;
 }
