@@ -19,11 +19,11 @@ export class SummarizerService {
     chrome.runtime.sendMessage({target: "background", action: "summarize", url: url});
   }
 
-  async indexArticle(articleId: string) {
+  async indexArticle(articleId: string): Promise<any> {
     return chrome.runtime.sendMessage({target: "offscreen", action: "index", articleId: articleId});
   }
 
-  async askQuestion(articleId: string, question: string): Promise<string> {
+  async askQuestion(articleId: string, question: string): Promise<any> {
     return chrome.runtime.sendMessage({target: "offscreen", action: "expand", articleId: articleId, query: question});
   }
 

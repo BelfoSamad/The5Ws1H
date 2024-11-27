@@ -59,13 +59,11 @@ export class SummaryComponent implements OnChanges {
 
   indexArticle() {
     this.indexLoading = true
-    this.summarizerService.indexArticle(this.article?.articleId!).then(_ => {
-      this.isIndexed = true
+    this.summarizerService.indexArticle(this.article?.articleId!).then(res => {
+      this.isIndexed = res.done
+      if (res.error != null) this._snackBar.open(res.error);
       this.indexLoading = false
-    }).catch(err => {
-      this._snackBar.open(err)
-      this.indexLoading = false
-    });;
+    });
   }
 
   askQuestion(query: HTMLInputElement) {
@@ -75,14 +73,15 @@ export class SummaryComponent implements OnChanges {
       this.queryLoading = true
       let question = query.value
       query.value = ""
-      this.summarizerService.askQuestion(this.article?.articleId!!, question).then(answer => {
-        if (this.expansion == undefined) this.expansion = [{question: question, answer: answer}]
-        else this.expansion.push({question: question, answer: answer})
+      this.summarizerService.askQuestion(this.article?.articleId!!, question).then(result => {
+        if (result.answer) {
+          if (this.expansion == undefined) this.expansion = [{question: question, answer: result.answer}];
+          else this.expansion.push({question: question, answer: result.answer});
+        } else {
+          this._snackBar.open(result.error);
+        }
         this.queryLoading = false
         this.scrollToBottom();
-      }).catch(err => {
-        this._snackBar.open(err)
-        this.queryLoading = false
       });
     }
   }

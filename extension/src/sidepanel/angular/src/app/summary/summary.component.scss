@@ -1,7 +1,6 @@
 .container {
     display: flex;
     flex-direction: column;
-    padding: 0 16px;
     height: 100%;
 }
 
@@ -23,10 +22,8 @@
 }
 
 .animated-gradient {
-    width: 90%;
     height: 256px;
     border-radius: 16px;
-    
     background: linear-gradient(90deg, var(--sys-primary), var(--sys-secondary));
     background-size: 200% 200%;
     animation: gradientAnimation 1s ease infinite;

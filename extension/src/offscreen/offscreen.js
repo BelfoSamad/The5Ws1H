@@ -127,12 +127,20 @@ function handleChromeMessages(message, _sender, sendResponse) {
             })();
             return true;
         case "index":
-            const indexArticle = httpsCallable(this.functions, 'indexArticleFlow');
-            indexArticle({articleId: message.articleId}).then(_res => {sendResponse({done: true})})
+            (async () => {
+                const indexArticle = httpsCallable(functions, 'indexArticleFlow');
+                indexArticle({articleId: message.articleId})
+                    .then(_res => {sendResponse({done: true})})
+                    .catch(err => {sendResponse({done: false, error: err.message})});
+            })();
             return true;
         case "expand":
-            const askQuestion = httpsCallable(this.functions, 'expandOnArticleFlow');
-            askQuestion({articleId: message.articleId, query: message.query}).then(res => {sendResponse({answer: res.data})})
+            (async () => {
+                const askQuestion = httpsCallable(functions, 'expandOnArticleFlow');
+                askQuestion({articleId: message.articleId, query: message.query})
+                    .then(res => {sendResponse({answer: res.data})})
+                    .catch(err => {sendResponse({error: err.message})});
+            })();
             return true;
     }
 }
