@@ -37,9 +37,10 @@ export class HomeComponent implements OnInit {
   readonly dialog = inject(MatDialog);
 
   //Data
-  url: string | undefined;
-  article: Article | undefined;
-  summarizeLoading: boolean | null = null;
+  url: string | undefined | null;
+  title: string | undefined | null;
+  article: Article | null = null;
+  summarizeLoading: Boolean | undefined;
 
   constructor(private router: Router, private zone: NgZone, private summarizerService: SummarizerService, private authService: AuthService) {
     chrome.runtime.sendMessage({target: "background", action: "init"});
@@ -50,25 +51,29 @@ export class HomeComponent implements OnInit {
     this.summarizerService.listenToSummarization().subscribe((message: any) => {
       this.zone.run(() => {
         if (message.target == "sidepanel") switch (message.action) {
-          case "url":
-            this.url = message.url;
-            break;
           case "start_animation":
+            this.article = null;
             this.summarizeLoading = true;
             break;
-          case "result":
-            if (message.result.error != null) {
-              if (message.error == "ERROR::AUTH") this.logout();
-              else {
-                this.summarizeLoading = null;
-                this._snackBar.open(message.error);
+          case "tab":
+            // set basic details
+            const tabDetails = message.tab;
+            if (tabDetails != null) {
+              this.url = tabDetails.url;
+              this.title = tabDetails.title;
+
+              // article done analzying
+              if (tabDetails.article !== undefined) {
+                this.summarizeLoading = false; // stop animation
+                this.article = tabDetails.article; // get article (either object or null)
+
+                // logout if AUTH error or show the error message
+                if (tabDetails.error == "ERROR::AUTH") this.logout();
+                else if (tabDetails.error != null) this._snackBar.open(tabDetails.error);
               }
             } else {
-              if (message.result.article == null) this.summarizeLoading = null;
-              else {
-                this.article = message.result.article;
-                this.summarizeLoading = false;
-              }
+              this.url = undefined;
+              this.title = undefined;
             }
             break;
         }
@@ -77,12 +82,12 @@ export class HomeComponent implements OnInit {
   }
 
   summarizeArticle() {
-    if (this.url != null) this.summarizerService.summarizeArticle(this.url!);
-    else this._snackBar.open("No Article URL found! Refresh page to get URL!");
+    if (this.url != undefined) this.summarizerService.summarizeArticle(this.url);
+    else this._snackBar.open("No Article URL found! Reload page to get URL!");
   }
 
   summaryClosed() {
-    this.summarizeLoading = null;
+    this.summarizeLoading = undefined;
   }
 
   goHistory() {

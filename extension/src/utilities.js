@@ -11,10 +11,6 @@ export function stopAnimations(tabId) {
     chrome.tabs.sendMessage(tabId, {action: "stop_animation"});
 }
 
-export function sendUrl(url) {
-    chrome.runtime.sendMessage({target: "sidepanel", action: "url", url: url});
-}
-
-export function sendResult(result) {
-    chrome.runtime.sendMessage({target: "sidepanel", action: "result", result: result});
+export function sendTabDetails(tab) {
+    chrome.runtime.sendMessage({target: "sidepanel", action: "tab", tab: tab});
 }

@@ -37,7 +37,7 @@ export class SummaryComponent implements OnChanges {
   //Inputs
   @Input() isLoading: Boolean = false;
   @Input() isHome: Boolean = true;
-  @Input() article: Article | undefined;
+  @Input() article: Article | null = null;
 
   //Data
   summaries: [string, string][] = [];

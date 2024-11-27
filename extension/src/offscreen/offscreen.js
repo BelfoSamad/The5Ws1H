@@ -52,11 +52,10 @@ function handleChromeMessages(message, _sender, sendResponse) {
             (async () => {
                 try {
                     const url = message.url
-                    console.log(url);
                     await getDocs(query(collection(db, "articles"), where("url", "==", url))).then(async querySnapshot => {
                         if (querySnapshot.empty) {
                             const summarizeArticle = httpsCallable(functions, 'summarizeArticleFlow');
-                            summarizeArticle({url: url}).then(res => {
+                            summarizeArticle({url: url, userId: ""}).then(res => {
                                 const result = res.data;
                                 const article = {
                                     articleId: result.articleId,
@@ -68,6 +67,8 @@ function handleChromeMessages(message, _sender, sendResponse) {
                                     expansion: undefined
                                 };
                                 sendResponse({error: null, article: article});
+                            }).catch(e => {
+                                sendResponse({error: e.message, article: null});
                             });
                         } else {
                             const snapshot = querySnapshot.docs[0]

@@ -26,7 +26,7 @@ export class ArticleComponent {
 
   //Data
   summarizeLoading = true;
-  article: Article | undefined;
+  article: Article | null = null;
 
   constructor(private router: Router) { }
 
