@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "The5Ws1H",
-  "description": "",
+  "description": "Summarize your news articles following the 5Ws and 1H structure!",
   "version": "1.0.0",
   "permissions": [
     "activeTab",

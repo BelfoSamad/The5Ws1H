@@ -13,9 +13,9 @@
     </mat-toolbar>
     <div class="content">
         @if (!summarizeLoading && article === undefined) {
-        <p class="prompt mat-body-large">The Article:<br />
-            <span [ngClass]="url == null ? 'loading-url mat-body-large' : 'mat-body-medium'">{{title === undefined ?
-                "Not detected, Reload Page!" : title === null ? "This is a Chrome page, Reload Page!" : title}}</span>
+        <p class="prompt mat-headline-medium">Currently in:<br />
+            <span [ngClass]="url == null ? 'loading-url mat-body-large' : 'mat-body-large'">{{title === undefined ?
+                "Not detected, Reload Page!" : title === null ? "This is a Chrome page,\nReload Page!" : title}}</span>
         </p>
         <!-- Scan/Summarize Button -->
         <button class="summarize" mat-flat-button (click)="summarizeArticle()">

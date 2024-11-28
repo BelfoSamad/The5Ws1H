@@ -61,11 +61,12 @@ export class HomeComponent implements OnInit {
             if (this.article != null) this.summarizerService.saveArticleIdLocally(tabDetails.article.articleId)
             break;
           case "error":
+            this.summarizeLoading = false;
             // logout if AUTH error or show the error message
-            if (tabDetails.error == "ERROR::AUTH") {
+            if (message.error == "ERROR::AUTH") {
               this._snackBar.open("You have been Logged out, Re-Login again!");
-              this.logout();
-            } else if (tabDetails.error != null) this._snackBar.open(tabDetails.error);
+              setTimeout(() => {this.logout();}, 2000);
+            } else if (message.error != null) this._snackBar.open(message.error);
             break;
         }
       });
