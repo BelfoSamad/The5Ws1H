@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 99999;
+    z-index: 9999999;
     pointer-events: none;
     overflow: hidden;
     /* Ensures the pseudo-element stays within the box */
@@ -17,15 +17,15 @@
     left: 0px;
     right: 0px;
     bottom: 0px;
-    background: linear-gradient(var(--a), #ecd493, #ecaf93, #ec93ba, #b893ec, #93b5ec);
-    filter: blur(32px);
+    background: linear-gradient(var(--a), #BADC9D, #9DD1C8, #BADC9D);
+    filter: blur(24px);
     /* Creates the soft shadow effect */
-    z-index: 99999;
+    z-index: 9999999;
     mask:
-        linear-gradient(to top, transparent, black) top / 100% 5%,
-        linear-gradient(to bottom, transparent, black) bottom / 100% 5%,
-        linear-gradient(to left, transparent, black) left / 2% 100%,
-        linear-gradient(to right, transparent, black) right / 2% 100%;
+        linear-gradient(to top, transparent, black) top / 100% 10%,
+        linear-gradient(to bottom, transparent, black) bottom / 100% 10%,
+        linear-gradient(to left, transparent, black) left / 5% 100%,
+        linear-gradient(to right, transparent, black) right / 5% 100%;
     mask-repeat: no-repeat;
     animation: moveGradient 5s infinite alternate;
 }
