@@ -1,35 +1,56 @@
 {
-    "manifest_version": 3,
-    "name": "The5Ws1H",
-    "description": "",
-    "version": "1.0.0",
-    "permissions": ["activeTab", "tabs", "sidePanel", "offscreen", "storage", "webNavigation"],
-    "icons": {
-      "16": "./images/icon16.png",
-      "32": "./images/icon32.png",
-      "48": "./images/icon48.png",
-      "128": "./images/icon128.png"
-    },
-    "background": {
-      "service_worker": "background.js"
-    },
-    "side_panel": {
-      "default_path": "./sidepanel/index.html"
-    },
-    "content_scripts": [
-      {
-        "js": ["./content/script.js"],
-        "css": ["./content/styles.css"],
-        "matches": ["<all_urls>"]
-      }
-    ],
-    "web_accessible_resources": [
-      {
-        "resources": ["images/*"],
-        "matches": ["<all_urls>"]
-      }
-    ],
-    "content_security_policy": {
-        "extension_pages": "script-src 'self'; object-src 'self'"
+  "manifest_version": 3,
+  "name": "The5Ws1H",
+  "description": "",
+  "version": "1.0.0",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "sidePanel",
+    "offscreen",
+    "storage",
+    "webNavigation"
+  ],
+  "icons": {
+    "16": "./images/icon16.png",
+    "32": "./images/icon32.png",
+    "48": "./images/icon48.png",
+    "128": "./images/icon128.png"
+  },
+  "trial_tokens": [
+    "Arh4Glhf0wXA+CeiC8yIouV5PeskF0T9uRO7AllWMzoqnWvWxM94+R3awKckz/yW24bxkP8PTcXouTuJXx++0g4AAABveyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vamdwZ2RtZGlwa3BmZW1tZmppY21mbWdpZG5ub25obWgiLCJmZWF0dXJlIjoiVHJhbnNsYXRpb25BUEkiLCJleHBpcnkiOjE3NTMxNDI0MDB9",
+    "AnG3k1Wd/WWRj+cPss8LwRQKM3YS2alOzdvBmVzXb7HFGD0hsXR8xKPaVfdRlcYmSUGCRfd8WNbmVw2R0ujLBQ4AAABzeyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vamdwZ2RtZGlwa3BmZW1tZmppY21mbWdpZG5ub25obWgiLCJmZWF0dXJlIjoiQUlTdW1tYXJpemF0aW9uQVBJIiwiZXhwaXJ5IjoxNzUzMTQyNDAwfQ=="
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "./sidepanel/index.html"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "./content/script.js"
+      ],
+      "css": [
+        "./content/styles.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }

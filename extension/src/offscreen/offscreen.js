@@ -2,6 +2,7 @@ import {app} from '../configs';
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth/web-extension';
 import {getFirestore, getDoc, getDocs, setDoc, doc, query, collection, where, orderBy} from 'firebase/firestore';
 import {getFunctions, httpsCallable} from 'firebase/functions';
+import {summarizeArticle} from '../utilities';
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -108,5 +109,88 @@ function handleChromeMessages(message, _sender, sendResponse) {
                 }
             })();
             return true;
+        //--------------------------- In-Device Tools
+        case "summarizer":
+            (async () => {
+                const summarization = await generateSummary(message.article, "tl;dr", "medium");
+                sendResponse({summarization: summarization});
+            })()
+            return true;
+        case "translator":
+            (async () => {
+                const translation = await translateText(message.text, "es");
+                sendResponse({translation: translation});
+            })()
+            return true;
     }
+}
+
+//------------------------------- Translation
+export async function translateText(text, targetLanguage) {
+    try {
+        const session = await createTranslator(targetLanguage);
+        const translation = await session.translate(text);
+        session.destroy();
+        return translation;
+    } catch (e) {
+        console.log('Translation failed');
+        console.error(e);
+        return 'Error: ' + e.message;
+    }
+}
+
+async function createTranslator(targetLanguage) {
+    if (!window.ai || !window.ai.translator) {
+        throw new Error('AI Translation is not supported in this browser');
+    }
+
+    return await window.ai.translator.create({
+        sourceLanguage: "en",
+        targetLanguage: targetLanguage,
+    });
+}
+
+//------------------------------- Summarization
+export async function generateSummary(article, type, length) {
+    try {
+        const session = await createSummarizer(
+            {
+                type: type, //tl;dr, teaser, headline
+                format: "plain-text",
+                length: length //short, medium, long
+            },
+            (message, progress) => {
+                console.log(`${message} (${progress.loaded}/${progress.total})`);
+            }
+        );
+        const summary = await session.summarize(article);
+        session.destroy();
+        return summary;
+    } catch (e) {
+        console.log('Summary generation failed');
+        console.error(e);
+        return 'Error: ' + e.message;
+    }
+}
+
+async function createSummarizer(config, downloadProgressCallback) {
+    if (!window.ai || !window.ai.summarizer) {
+        throw new Error('AI Summarization is not supported in this browser');
+    }
+    const canSummarize = await window.ai.summarizer.capabilities();
+    if (canSummarize.available === 'no') {
+        throw new Error('AI Summarization is not supported');
+    }
+    const summarizationSession = await window.ai.summarizer.create(
+        config,
+        downloadProgressCallback
+    );
+    if (canSummarize.available === 'after-download') {
+        summarizationSession.addEventListener(
+            'downloadprogress',
+            downloadProgressCallback
+        );
+        await summarizationSession.ready;
+    }
+    return summarizationSession;
 }
