@@ -10,6 +10,9 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {SummarizerService} from '../services/summarizer.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatInputModule} from '@angular/material/input';
+import {WikipediaService} from '../services/wikipedia.service';
+import {DetailsDialog} from './details/details-dialog';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-summary',
@@ -37,6 +40,11 @@ export class SummaryComponent implements OnChanges {
   //Data
   summaries: any[] = [];
   currentIndex = 0;
+
+  //Dialog
+  readonly dialog = inject(MatDialog);
+
+  constructor(private wikipediaService: WikipediaService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.article != null) {
@@ -66,6 +74,30 @@ export class SummaryComponent implements OnChanges {
   }
 
   onAnswerClick(answer: string) {
-    //TODO: Use clicked answer properly
+    // setup dialog
+    const dialogRef = this.dialog.open(DetailsDialog);
+    dialogRef.componentInstance.updateData({
+      isLoading: true,
+      answer: answer
+    });
+
+    // search answer
+    this.wikipediaService.search(answer).subscribe({
+      next: (response) => {
+        dialogRef.componentInstance.updateData({
+          isLoading: false,
+          answer: answer,
+          definition: response.extract,
+          imageUrl: response.thumbnail?.source || ''
+        });
+      },
+      error: (error) => {
+        dialogRef.componentInstance.updateData({
+          isLoading: false,
+          answer: answer,
+          error: error
+        });
+      },
+    });
   }
 }

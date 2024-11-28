@@ -1,0 +1,29 @@
+.dialog-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+h2 {
+    text-align: center;
+}
+
+mat-spinner {
+    margin: 48px;
+}
+
+mat-dialog-actions {
+    display: flex;
+    align-self: center;
+}
+
+.explication {
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.image {
+    width: 128px;
+}
