@@ -12,7 +12,6 @@ export async function addArticle(
         url: url,
         title: title,
         createdAt: on,
-        indexed: false,
         summary: result.summary,
     })).id;
 }

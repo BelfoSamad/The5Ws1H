@@ -7,17 +7,10 @@ export interface Summary {
     how: string
 }
 
-export interface Expansion {
-    question: string,
-    answer: string
-}
-
 export interface Article {
     articleId: string,
     url: string,
     title: string,
     createdAt: Date,
-    indexed: boolean,
-    summary: Summary,
-    expansion: Expansion[] | undefined
+    summary: Summary
 }

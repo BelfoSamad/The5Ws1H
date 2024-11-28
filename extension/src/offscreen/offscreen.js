@@ -61,9 +61,7 @@ function handleChromeMessages(message, _sender, sendResponse) {
                                     title: result.title,
                                     createdAt: result.createdAt,
                                     url: url,
-                                    indexed: false,
-                                    summary: result.summary,
-                                    expansion: undefined
+                                    summary: result.summary
                                 };
                                 sendResponse({error: null, article: article});
                             }).catch(e => {
@@ -72,20 +70,12 @@ function handleChromeMessages(message, _sender, sendResponse) {
                         } else {
                             const snapshot = querySnapshot.docs[0]
                             const articleData = snapshot.data()
-                            const questionsQuery = query(collection(db, `articles/${snapshot.id}/questions`), orderBy("createdAt", "asc"))
                             const article = {
                                 articleId: snapshot.id,
                                 url: articleData['url'],
                                 title: articleData['title'],
                                 createdAt: articleData['createdAt'].toDate(),
-                                indexed: articleData['indexed'],
-                                summary: articleData['summary'],
-                                expansion: (await getDocs(questionsQuery)).docs.map(exp => {
-                                    return {
-                                        question: exp.data()['question'],
-                                        answer: exp.data()['answer']
-                                    }
-                                })
+                                summary: articleData['summary']
                             };
                             sendResponse({error: null, article: article});
                         }
@@ -103,20 +93,12 @@ function handleChromeMessages(message, _sender, sendResponse) {
                         let articles = []
                         for (const snapshot of querySnapshot.docs) {
                             const articleData = snapshot.data()
-                            const questionsQuery = query(collection(db, `articles/${snapshot.id}/questions`), orderBy("createdAt", "asc"))
                             articles.push({
                                 articleId: snapshot.id,
                                 url: articleData['url'],
                                 title: articleData['title'],
                                 createdAt: articleData['createdAt'].toDate(),
-                                indexed: articleData['indexed'],
-                                summary: articleData['summary'],
-                                expansion: (await getDocs(questionsQuery)).docs.map(exp => {
-                                    return {
-                                        question: exp.data()['question'],
-                                        answer: exp.data()['answer']
-                                    }
-                                })
+                                summary: articleData['summary']
                             })
                         }
                         sendResponse({error: null, articles: articles})
