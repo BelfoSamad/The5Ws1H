@@ -1,6 +1,3 @@
-// Catch User's Selection
-
-
 // Create Animated Overlay
 function createOverlay() {
     const overlay = document.createElement("div");

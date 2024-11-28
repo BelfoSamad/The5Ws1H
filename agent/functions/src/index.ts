@@ -1,18 +1,16 @@
 import {z, genkit} from "genkit";
 import {logger} from "genkit/logging";
-import {defineFirestoreRetriever} from "@genkit-ai/firebase";
 import {applicationDefault, initializeApp} from "firebase-admin/app";
 import {firebaseAuth} from "@genkit-ai/firebase/auth";
-import {FieldValue, getFirestore} from "firebase-admin/firestore";
+import {getFirestore} from "firebase-admin/firestore";
 import {defineSecret} from "firebase-functions/params";
-import {addArticle, getArticle, setArticleHistory, setArticleIndexed, updateArticle} from "./tools/firestore";
-import {getChuckedDocuments} from "./tools/chunker";
+import {addArticle, setArticleHistory} from "./tools/firestore";
 import {getContentFromUrl} from "./tools/pdf";
 import {credential} from "firebase-admin";
 import {extractTextFromPdf} from "./tools/storage";
 import {config} from "dotenv";
 import {onFlow} from "@genkit-ai/firebase/functions";
-import {googleAI, gemini15Flash, textEmbeddingGecko001} from "@genkit-ai/googleai";
+import {googleAI} from "@genkit-ai/googleai";
 
 // ----------------------------------------- Initializations
 const debug = false;
@@ -30,22 +28,6 @@ logger.setLogLevel(debug ? "debug" : "info");
 
 // Keys
 const googleAiApiKey = defineSecret("GOOGLE_GENAI_API_KEY");
-
-// ----------------------------------------- RAG Declarations
-const indexConfig = {
-    contentField: "text",
-    vectorField: "embedding",
-    embedder: textEmbeddingGecko001,
-};
-const articleRetrieverRef = defineFirestoreRetriever(ai, {
-    name: "articleRetriever",
-    firestore: firestore,
-    collection: "articles",
-    contentField: "text",
-    vectorField: "embedding",
-    embedder: textEmbeddingGecko001,
-    distanceMeasure: "COSINE", // "EUCLIDEAN", "DOT_PRODUCT", or "COSINE" (default)
-});
 
 // ----------------------------------------- Flows
 export const summarizeArticleFlow = debug ? ai.defineFlow(
@@ -119,128 +101,6 @@ async function doSummarizeArticleFlow(input: any) {
     };
 }
 
-export const indexArticleFlow = debug ? ai.defineFlow(
-    {
-        name: "indexArticleFlow",
-        inputSchema: z.object({
-            articleId: z.string(),
-        }),
-        outputSchema: z.string(),
-    },
-    doIndexArticleFlow
-) : onFlow(
-    ai,
-    {
-        name: "indexArticleFlow",
-        httpsOptions: {
-            secrets: [googleAiApiKey],
-            cors: true,
-        },
-        inputSchema: z.object({
-            articleId: z.string(),
-        }),
-        outputSchema: z.string(),
-        authPolicy: firebaseAuth((user) => {
-            if (!user) throw Error("ERROR::AUTH");
-        }),
-    },
-    doIndexArticleFlow,
-);
-
-async function doIndexArticleFlow(input: {articleId: string}) {
-    // ------------------------ Extract More Content
-    // get article's identifierId
-    const article = await getArticle(firestore, input.articleId);
-    const content = debug ? await extractTextFromPdf("article.pdf") : await getContentFromUrl(article!.url);
-
-    // chunk and prepare documents
-    const chunks = await getChuckedDocuments(
-        content.content,
-        gemini15Flash.name.replace("googleai/", ""),
-        debug,
-    );
-
-    // ------------------------ Index Content
-    for (const text of chunks) {
-        const embedding = await ai.embed({
-            embedder: indexConfig.embedder,
-            content: text,
-        });
-        await firestore.collection(`articles/${input.articleId}/index`).add({
-            [indexConfig.vectorField]: FieldValue.vector(embedding),
-            [indexConfig.contentField]: text,
-        });
-    }
-
-    // update database (Article is now indexed)
-    setArticleIndexed(firestore, input.articleId);
-
-    return "DONE"; // response only to avoid Error: Response is missing data field.
-}
-
-export const expandOnArticleFlow = debug ? ai.defineFlow(
-    {
-        name: "expandOnArticleFlow",
-        inputSchema: z.object({
-            articleId: z.string(),
-            query: z.string(),
-        }),
-        outputSchema: z.string(),
-    },
-    doExpandOnArticleFlow,
-) : onFlow(
-    ai,
-    {
-        name: "expandOnArticleFlow",
-        httpsOptions: {
-            secrets: [googleAiApiKey],
-            cors: true,
-        },
-        inputSchema: z.object({
-            articleId: z.string(),
-            query: z.string(),
-        }),
-        outputSchema: z.string(),
-        authPolicy: firebaseAuth((user) => {
-            if (!user) throw Error("ERROR::AUTH");
-        }),
-    },
-    doExpandOnArticleFlow,
-);
-
-async function doExpandOnArticleFlow(input: {articleId: string, query: string}) {
-    // ------------------------ Ask Question
-    // retrieve extra context
-    const context = await ai.retrieve({
-        retriever: articleRetrieverRef,
-        query: input.query,
-        options: {
-            limit: 3,
-            collection: `articles/${input.articleId}/index`,
-        },
-    });
-
-    // ask question w/ context
-    const askQuestionPrompt = ai.prompt("ask_question");
-    const result = (await askQuestionPrompt({query: input.query}, {docs: context})).output;
-
-    // return error if failure
-    if (result.answer == "Error::NO_CONTEXT") {
-        throw Error("Error: There no enough context to respond to your question.");
-    }
-
-    // ------------------------ Save Question/Answer
-    updateArticle(
-        firestore,
-        input.articleId,
-        input.query,
-        result.answer,
-    );
-
-    // Return Answer
-    return result.answer;
-}
-
 // ----------------------------------------- Start
-const flows = [summarizeArticleFlow, indexArticleFlow, expandOnArticleFlow];
+const flows = [summarizeArticleFlow];
 if (debug) ai.startFlowServer({flows});

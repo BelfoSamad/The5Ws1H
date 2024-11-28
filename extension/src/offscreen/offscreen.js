@@ -126,21 +126,5 @@ function handleChromeMessages(message, _sender, sendResponse) {
                 }
             })();
             return true;
-        case "index":
-            (async () => {
-                const indexArticle = httpsCallable(functions, 'indexArticleFlow');
-                indexArticle({articleId: message.articleId})
-                    .then(_res => {sendResponse({done: true})})
-                    .catch(err => {sendResponse({done: false, error: err.message})});
-            })();
-            return true;
-        case "expand":
-            (async () => {
-                const askQuestion = httpsCallable(functions, 'expandOnArticleFlow');
-                askQuestion({articleId: message.articleId, query: message.query})
-                    .then(res => {sendResponse({answer: res.data})})
-                    .catch(err => {sendResponse({error: err.message})});
-            })();
-            return true;
     }
 }
