@@ -34,9 +34,7 @@ export class SummarizerService {
 
   async saveArticleIdLocally(articleId: string) {
     const articleIds = (await chrome.storage.local.get(["articleIds"]))["articleIds"];
-    console.log(articleIds);
-    if (!articleIds.includes(articleIds)) articleIds.push(articleId);
-    console.log(articleIds);
+    if (!articleIds.includes(articleId)) articleIds.push(articleId);
     await chrome.storage.local.set({articleIds: articleIds});
   }
 

@@ -39,8 +39,8 @@ export class HomeComponent implements OnInit {
   //Data
   url: string | undefined | null;
   title: string | undefined | null;
-  article: Article | null = null;
-  summarizeLoading: Boolean | undefined;
+  article: Article | undefined | null;
+  summarizeLoading = false;
 
   constructor(private router: Router, private zone: NgZone, private summarizerService: SummarizerService, private authService: AuthService) {
     chrome.runtime.sendMessage({target: "background", action: "init"});
@@ -51,31 +51,21 @@ export class HomeComponent implements OnInit {
     this.summarizerService.listenToSummarization().subscribe((message: any) => {
       this.zone.run(() => {
         if (message.target == "sidepanel") switch (message.action) {
-          case "start_animation":
-            this.article = null;
-            this.summarizeLoading = true;
-            break;
           case "tab":
             // set basic details
             const tabDetails = message.tab;
-            if (tabDetails != null) {
-              this.url = tabDetails.url;
-              this.title = tabDetails.title;
-
-              // article done analzying
-              if (tabDetails.article !== undefined) {
-                this.summarizeLoading = false; // stop animation
-                this.article = tabDetails.article; // get article (either object or null)
-                if (tabDetails.article !== null) this.summarizerService.saveArticleIdLocally(tabDetails.article.articleId)
-
-                // logout if AUTH error or show the error message
-                if (tabDetails.error == "ERROR::AUTH") this.logout();
-                else if (tabDetails.error != null) this._snackBar.open(tabDetails.error);
-              }
-            } else {
-              this.url = undefined;
-              this.title = undefined;
-            }
+            this.summarizeLoading = tabDetails?.isLoading ?? false;
+            this.url = tabDetails?.url;
+            this.title = tabDetails?.title;
+            this.article = tabDetails?.article; // get article (either object or null)
+            if (this.article != null) this.summarizerService.saveArticleIdLocally(tabDetails.article.articleId)
+            break;
+          case "error":
+            // logout if AUTH error or show the error message
+            if (tabDetails.error == "ERROR::AUTH") {
+              this._snackBar.open("You have been Logged out, Re-Login again!");
+              this.logout();
+            } else if (tabDetails.error != null) this._snackBar.open(tabDetails.error);
             break;
         }
       });

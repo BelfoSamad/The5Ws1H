@@ -1,4 +1,4 @@
-import {sendTabDetails, startAnimations, summarizeArticle, stopAnimations} from "./utilities";
+import {sendTabDetails, sendTabError, startAnimations, summarizeArticle, stopAnimations} from "./utilities";
 
 //------------------------------- Declarations
 let creating; // A global promise to avoid concurrency issues
@@ -15,23 +15,36 @@ chrome.runtime.onMessage.addListener(async (message) => {
                 sendTabDetails(tabs.get(activeTabId));
                 break;
             case "summarize":
+                const summaryTabId = activeTabId; // save tab id since it might change
+
                 // start animations
                 startAnimations(activeTabId);
+                // start on siepanel
+                tabs.set(summaryTabId, {...tabs.get(activeTabId), isLoading: true});
+                sendTabDetails(tabs.get(summaryTabId));
 
                 // summarize article
                 const result = await summarizeArticle(message.url);
 
-                // set locally and send back
-                tabs.set(activeTabId, {
-                    article: result.article,
-                    error: result.error,
-                    url: tabs.get(activeTabId).url,
-                    title: tabs.get(activeTabId).title
-                })
-                sendTabDetails(tabs.get(activeTabId));
+                // tab might be removed, check first if still exists then apply changes
+                if (tabs.has(summaryTabId)) {
+                    // an error caught send Error to Sidepanel
+                    if (result.error != null) sendTabError(result.error);
+                    else {
+                        // set locally
+                        tabs.set(summaryTabId, {
+                            article: result.article,
+                            url: tabs.get(activeTabId)?.url,
+                            title: tabs.get(activeTabId)?.title,
+                            isLoading: false
+                        });
+                        // send back only if we are still in the same tab
+                        if (summaryTabId == activeTabId) sendTabDetails(tabs.get(activeTabId));
+                    }
 
-                // stop animations
-                stopAnimations(activeTabId);
+                    // stop animations
+                    stopAnimations(summaryTabId);
+                }
                 break;
         }
     }
@@ -44,8 +57,6 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
         if (details.url.startsWith("chrome://")) {
             // chrome related tab, don't allow summarization
             tabs.set(activeTabId, {
-                article: undefined,
-                error: undefined,
                 url: null,
                 title: null
             });
@@ -54,8 +65,6 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
             // query current tab from title
             chrome.tabs.query({active: true, currentWindow: true}, function (queryTabs) {
                 tabs.set(activeTabId, {
-                    article: undefined,
-                    error: undefined,
                     url: details.url,
                     title: queryTabs[0].title
                 });

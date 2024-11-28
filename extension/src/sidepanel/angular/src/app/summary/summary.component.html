@@ -37,7 +37,7 @@
                 <button mat-icon-button (click)="goToPrevious()" [disabled]="currentIndex === 0">
                     <mat-icon>chevron_left</mat-icon>
                 </button>
-                <button mat-icon-button (click)="goToNext()" [disabled]="currentIndex === summaries.length">
+                <button mat-icon-button (click)="goToNext()" [disabled]="currentIndex === summaries.length - 1">
                     <mat-icon>chevron_right</mat-icon>
                 </button>
             </div>

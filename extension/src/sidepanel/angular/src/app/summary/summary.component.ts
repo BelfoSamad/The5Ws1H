@@ -32,8 +32,7 @@ export class SummaryComponent implements OnChanges {
 
   //Inputs
   @Input() isLoading: Boolean = false;
-  @Input() isHome: Boolean = true;
-  @Input() article: Article | null = null;
+  @Input() article: Article | undefined | null;
 
   //Data
   summaries: any[] = [];
@@ -57,7 +56,7 @@ export class SummaryComponent implements OnChanges {
   }
 
   goToNext() {
-    if (this.currentIndex <= this.summaries.length) {
+    if (this.currentIndex < this.summaries.length - 1) {
       this.currentIndex++;
     }
   }

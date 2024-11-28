@@ -12,7 +12,7 @@
         </div>
     </mat-toolbar>
     <div class="content">
-        @if (summarizeLoading === undefined) {
+        @if (!summarizeLoading && article === undefined) {
         <p class="prompt mat-body-large">The Article:<br />
             <span [ngClass]="url == null ? 'loading-url mat-body-large' : 'mat-body-medium'">{{title === undefined ?
                 "Not detected, Reload Page!" : title === null ? "This is a Chrome page, Reload Page!" : title}}</span>
@@ -22,8 +22,7 @@
             <span class="mat-label-large">Summarize</span>
         </button>
         } @else {
-        <app-summary style="width: 100%;" [isLoading]="summarizeLoading" [article]="article" [isHome]="true"
-            class="summary"></app-summary>
+        <app-summary style="width: 100%;" [isLoading]="summarizeLoading" [article]="article"></app-summary>
         }
     </div>
 </div>

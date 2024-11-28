@@ -1,6 +1,5 @@
 export function startAnimations(tabId) {
     chrome.tabs.sendMessage(tabId, {action: "start_animation"});
-    chrome.runtime.sendMessage({target: "sidepanel", action: "start_animation"});
 }
 
 export async function summarizeArticle(url) {
@@ -13,4 +12,8 @@ export function stopAnimations(tabId) {
 
 export function sendTabDetails(tab) {
     chrome.runtime.sendMessage({target: "sidepanel", action: "tab", tab: tab});
+}
+
+export function sendTabError(error) {
+    chrome.runtime.sendMessage({target: "sidepanel", action: "error", error: error});
 }
