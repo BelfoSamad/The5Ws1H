@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
         this.loginLoading = false
         if (response.done) {
           this.authService.saveArticleIds(response.articleIds);
-          this.router.navigate(['']); //go home
+          this.router.navigate(['/home']); //go home
         } else this._snackBar.open(response.error);
       });
     } else {

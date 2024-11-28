@@ -1,3 +1,4 @@
+///<reference types="chrome"/>
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 
@@ -12,13 +13,14 @@ export class BoardingComponent implements OnInit {
 
   constructor(private router: Router) { }
 
-  ngOnInit(): void {
-    // set time of 5 seconds then move to home
-    setTimeout(() => {
+  async ngOnInit(): Promise<void> {
+    const saved = await chrome.storage.local.get(["boardingCompleted"]);
+    if (saved["boardingCompleted"] === true) this.router.navigate(['/home']);
+    else setTimeout(() => {
       chrome.storage.local.set({boardingCompleted: true}, () => {
-        this.router.navigate(['']);
+        this.router.navigate(['/home']);
       });
-    }, 10000);
+    }, 2000);
   }
 
 }
