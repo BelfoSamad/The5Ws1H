@@ -6,7 +6,7 @@
         <h4>History</h4>
     </mat-toolbar>
     <div class="article-list">
-        <p class="mat-body-large" *ngIf="!loading && empty">No articles found.</p>
+        <p class="mat-body-large" *ngIf="!loading && empty">No articles summarized.</p>
         <mat-spinner *ngIf="loading"></mat-spinner>
         <div *ngFor="let key of sortedKeys">
             <p class="date mat-title-medium">{{key}}</p>
