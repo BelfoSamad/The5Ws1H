@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { InDeviceAiService } from './in-device-ai.service';
+import { SettingsService } from './settings.service';
 
-describe('InDeviceAiService', () => {
-  let service: InDeviceAiService;
+describe('SettingsService', () => {
+  let service: SettingsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(InDeviceAiService);
+    service = TestBed.inject(SettingsService);
   });
 
   it('should be created', () => {

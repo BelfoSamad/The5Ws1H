@@ -7,7 +7,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {Router} from '@angular/router';
-import {InDeviceAiService} from '../services/in-device-ai.service';
+import {SettingsService} from '../services/settings.service';
 import {AuthService} from '../services/auth.service';
 import {CommonModule} from '@angular/common';
 
@@ -46,29 +46,29 @@ export class SettingsComponent implements OnInit {
     {name: "Bengali", code: "bn"}
   ]
 
-  constructor(private router: Router, private inDeviceAiService: InDeviceAiService, private authService: AuthService) {
-    this.inDeviceAiService.isSummarizerAvailable().then(available => {this.isSummarizerAvailable = available});
-    this.inDeviceAiService.isTranslatorAvailable().then(available => {this.isTranslatorAvailable = available});
+  constructor(private router: Router, private settingsService: SettingsService, private authService: AuthService) {
+    this.settingsService.isSummarizerAvailable().then(available => {this.isSummarizerAvailable = available});
+    this.settingsService.isTranslatorAvailable().then(available => {this.isTranslatorAvailable = available});
   }
 
   ngOnInit(): void {
-    this.inDeviceAiService.getSettings().then(settings => {
-      this.language = settings["targetLanguage"];
-      this.type = settings["summaryType"];
-      this.length = settings["summaryLength"];
+    this.settingsService.getSettings().then(settings => {
+      this.language = settings["targetLanguage"] ?? "es";
+      this.type = settings["summaryType"] ?? "tl;dr";
+      this.length = settings["summaryLength"] ?? "medium";
     });
   }
 
   onLanguageChanged(event: any) {
-    this.inDeviceAiService.saveSettings({targetLanguage: event.value});
+    this.settingsService.saveSettings({targetLanguage: event.value});
   }
 
   onTypeChanged(event: any) {
-    this.inDeviceAiService.saveSettings({summaryType: event.value});
+    this.settingsService.saveSettings({summaryType: event.value});
   }
 
   onLengthChanged(event: any) {
-    this.inDeviceAiService.saveSettings({summaryLength: event.value});
+    this.settingsService.saveSettings({summaryLength: event.value});
   }
 
   goBack() {

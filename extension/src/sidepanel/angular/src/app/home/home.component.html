@@ -3,10 +3,10 @@
         <span class="topbar-logo">5Ws1H</span>
         <span class="spacer"></span>
         <div class="navigation-buttons">
-            <button mat-icon-button (click)="goHistory()">
+            <button mat-icon-button [disabled]="summarizeLoading" (click)="goHistory()">
                 <mat-icon>history</mat-icon>
             </button>
-            <button mat-icon-button (click)="goSettings()">
+            <button mat-icon-button [disabled]="summarizeLoading" (click)="goSettings()">
                 <mat-icon>settings</mat-icon>
             </button>
         </div>
