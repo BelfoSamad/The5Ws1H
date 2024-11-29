@@ -8,6 +8,7 @@ import {Router, RouterLink} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {AuthService} from '../../services/auth.service';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'app-register',
@@ -18,6 +19,7 @@ import {AuthService} from '../../services/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatIconModule,
     ReactiveFormsModule,
     RouterLink,
   ],
@@ -30,6 +32,7 @@ export class RegisterComponent implements OnInit {
   //Declarations
   registerForm: FormGroup | undefined;
   registerLoading = false;
+  hidePassword = true;
 
   constructor(private router: Router, private fb: FormBuilder, private authService: AuthService) { }
 
@@ -55,6 +58,12 @@ export class RegisterComponent implements OnInit {
     } else {
       this.registerForm!!.markAllAsTouched();
     }
+  }
+
+  togglePasswordVisibility(event: MouseEvent): void {
+    event.preventDefault(); // Prevent form submission
+    this.hidePassword = !this.hidePassword;
+    this.registerForm!!.markAsPristine();
   }
 
   confirmPasswordValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {

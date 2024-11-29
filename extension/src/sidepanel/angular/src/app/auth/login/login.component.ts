@@ -8,6 +8,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ import {AuthService} from '../../services/auth.service';
     MatButtonModule,
     ReactiveFormsModule,
     RouterLink,
+    MatIconModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
@@ -30,6 +32,7 @@ export class LoginComponent implements OnInit {
   //Declarations
   loginForm: FormGroup | undefined;
   loginLoading = false;
+  hidePassword = true;
 
   constructor(private router: Router, private fb: FormBuilder, private authService: AuthService) { }
 
@@ -56,5 +59,11 @@ export class LoginComponent implements OnInit {
     } else {
       this.loginForm!!.markAllAsTouched(); // Highlight validation errors
     }
+  }
+  
+  togglePasswordVisibility(event: MouseEvent): void {
+    event.preventDefault(); // Prevent form submission
+    this.hidePassword = !this.hidePassword;
+    this.loginForm!!.markAsPristine();
   }
 }

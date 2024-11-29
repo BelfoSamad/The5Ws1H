@@ -19,8 +19,13 @@
         <!-- Password Input -->
         <mat-form-field subscriptSizing="dynamic" appearance="outline">
             <mat-label>Password</mat-label>
-            <input matInput type="password" class="mat-body-medium" placeholder="Enter a strong password"
-                formControlName="password" required />
+            <input matInput [type]="hidePassword ? 'password' : 'text'" class="mat-body-medium"
+                placeholder="Enter a strong password" formControlName="password" required />
+            <button class="password-visibility" type="button" mat-icon-button matSuffix
+                (click)="togglePasswordVisibility($event)" [attr.aria-label]="'Toggle password visibility'"
+                [attr.aria-pressed]="!hidePassword">
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
             <mat-error class="mat-body-medium"
                 *ngIf="loginForm?.touched && loginForm!!.get('password')?.hasError('required')">
                 Please enter your password.
@@ -32,7 +37,7 @@
         </mat-form-field>
 
         <!-- Login Button -->
-        <button mat-flat-button [disabled]="loginLoading" type="submit">
+        <button mat-flat-button class="login" [disabled]="loginLoading" type="submit">
             <mat-spinner [diameter]="24" [color]="'#111413'" *ngIf="loginLoading"></mat-spinner>
             <span class="mat-label-large" *ngIf="!loginLoading">Login</span>
         </button>
