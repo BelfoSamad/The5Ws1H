@@ -82,6 +82,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['history']);
   }
 
+  goSettings() {
+    this.router.navigate(['settings']);
+  }
+
   logout(): void {
     this.authService.logout();
     this.router.navigate(['login']);

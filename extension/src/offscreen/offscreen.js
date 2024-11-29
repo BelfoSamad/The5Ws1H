@@ -110,6 +110,19 @@ function handleChromeMessages(message, _sender, sendResponse) {
             })();
             return true;
         //--------------------------- In-Device Tools
+        case "summarizer_available":
+            (async () => {
+                if (window?.ai?.summarizer == null) sendResponse({available: false});
+                else {
+                    const canSummarize = await window.ai.summarizer.capabilities();
+                    if (canSummarize.available === 'no') sendResponse({available: false});
+                    else sendResponse({available: true});
+                }
+            })();
+            return true;
+        case "translator_available":
+            (async () => {sendResponse({available: window?.ai?.translator != null});})();
+            return true;
         case "summarizer":
             (async () => {
                 const summarization = await generateSummary(message.article, "tl;dr", "medium");

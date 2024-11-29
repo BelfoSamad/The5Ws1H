@@ -6,6 +6,7 @@ import {HistoryComponent} from './history/history.component';
 import {ArticleComponent} from './history/article/article.component';
 import {AuthGuard} from './services/auth.guard';
 import {BoardingComponent} from './boarding/boarding.component';
+import {SettingsComponent} from './settings/settings.component';
 
 export const routes: Routes = [
     {
@@ -27,6 +28,12 @@ export const routes: Routes = [
         path: 'home',
         component: HomeComponent,
         title: 'Home',
+        canActivate: [AuthGuard]
+    },
+    {
+        path: 'settings',
+        component: SettingsComponent,
+        title: 'Settings',
         canActivate: [AuthGuard]
     },
     {
