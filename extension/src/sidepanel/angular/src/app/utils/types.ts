@@ -13,5 +13,6 @@ export interface Article {
     title: string,
     createdAt: Date,
     summary: Summary,
-    translation: Summary | undefined
+    translation: Summary | undefined,
+    text_summary: string | undefined
 }

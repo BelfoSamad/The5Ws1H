@@ -6,7 +6,7 @@ function createOverlay() {
 }
 
 // Listen for messages from the background script
-chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     switch (message.action) {
         case "start_animation":
             createOverlay();
@@ -14,6 +14,9 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
         case "stop_animation":
             const overlaysByClass = document.getElementsByClassName("the5ws1h-overlay");
             if (overlaysByClass.length > 0) document.body.removeChild(overlaysByClass[0]);
+            break;
+        case "get_content":
+            sendResponse(document.documentElement.outerHTML);
             break;
     }
 });

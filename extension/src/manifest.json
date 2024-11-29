@@ -29,15 +29,9 @@
   },
   "content_scripts": [
     {
-      "js": [
-        "./content/script.js"
-      ],
-      "css": [
-        "./content/styles.css"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "js": ["./content/script.js"],
+      "css": ["./content/styles.css"],
+      "matches": ["<all_urls>"]
     }
   ],
   "web_accessible_resources": [

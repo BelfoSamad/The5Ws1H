@@ -31,7 +31,7 @@ chrome.runtime.onMessage.addListener(async (message) => {
                     // an error caught send Error to Sidepanel
                     if (result.error != null) sendTabError(result.error);
                     else {
-                        const enrichedArticle = await enrichArticle(result.article);
+                        const enrichedArticle = await enrichArticle(summaryTabId, result.article);
                         // set locally
                         tabs.set(summaryTabId, {
                             article: enrichedArticle,

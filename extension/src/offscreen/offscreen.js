@@ -1,8 +1,8 @@
 import {app} from '../configs';
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth/web-extension';
-import {getFirestore, getDoc, getDocs, setDoc, doc, query, collection, where, orderBy} from 'firebase/firestore';
+import {getFirestore, getDoc, getDocs, setDoc, query, collection, where} from 'firebase/firestore';
 import {getFunctions, httpsCallable} from 'firebase/functions';
-import {summarizeArticle} from '../utilities';
+import {Readability} from "@mozilla/readability";
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -125,8 +125,17 @@ function handleChromeMessages(message, _sender, sendResponse) {
             return true;
         case "summarizer":
             (async () => {
-                const summarization = await generateSummary(message.article, "tl;dr", "medium");
-                sendResponse(summarization);
+                // Prepare Text Content
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(message.html, 'text/html');
+                const reader = new Readability(doc);
+                const article = reader?.parse()?.textContent;
+
+                // Summarize
+                if (article != null) {
+                    const summarization = await generateSummary(article, message.type, message.length);
+                    sendResponse(summarization);
+                } else sendResponse(null);
             })()
             return true;
         case "translator":
@@ -146,7 +155,6 @@ export async function translateText(text, targetLanguage) {
         session.destroy();
         return translation;
     } catch (e) {
-        console.error("Error: " + e.message);
         return null;
     }
 }
@@ -165,6 +173,7 @@ async function createTranslator(targetLanguage) {
 //------------------------------- Summarization
 export async function generateSummary(article, type, length) {
     try {
+        console.log(article);
         const session = await createSummarizer(
             {
                 type: type, //tl;dr, teaser, headline
@@ -179,9 +188,8 @@ export async function generateSummary(article, type, length) {
         session.destroy();
         return summary;
     } catch (e) {
-        console.log('Summary generation failed');
         console.error(e);
-        return 'Error: ' + e.message;
+        return null;
     }
 }
 

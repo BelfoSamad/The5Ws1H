@@ -18,7 +18,7 @@ export function sendTabError(error) {
     chrome.runtime.sendMessage({target: "sidepanel", action: "error", error: error});
 }
 
-export async function enrichArticle(article) {
+export async function enrichArticle(tabId, article) {
     const settings = await chrome.storage.local.get(["targetLanguage", "summaryType", "summaryLength"]);
 
     // Translate Summary
@@ -45,5 +45,19 @@ export async function enrichArticle(article) {
 
         article["translation"] = translatedSummary;
     }
+
+    // Text Summary
+    if ((await chrome.runtime.sendMessage({target: "offscreen", action: "summarizer_available"})).available) {
+        const html = await chrome.tabs.sendMessage(tabId, {action: "get_content"});
+        const textSummary = await chrome.runtime.sendMessage({
+            target: "offscreen",
+            action: "summarizer",
+            html: html,
+            type: settings["summaryType"] ?? "tl;dr",
+            length: settings["summaryLength"] ?? "medium",
+        });
+        article["text_summary"] = textSummary;
+    }
+
     return article;
 }
