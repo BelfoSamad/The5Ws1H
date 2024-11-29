@@ -12,5 +12,6 @@ export interface Article {
     url: string,
     title: string,
     createdAt: Date,
-    summary: Summary
+    summary: Summary,
+    translation: Summary | undefined
 }

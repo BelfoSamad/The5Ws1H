@@ -1,4 +1,4 @@
-import {sendTabDetails, sendTabError, startAnimations, summarizeArticle, stopAnimations} from "./utilities";
+import {enrichArticle, sendTabDetails, sendTabError, startAnimations, summarizeArticle, stopAnimations} from "./utilities";
 
 //------------------------------- Declarations
 let creating; // A global promise to avoid concurrency issues
@@ -31,9 +31,10 @@ chrome.runtime.onMessage.addListener(async (message) => {
                     // an error caught send Error to Sidepanel
                     if (result.error != null) sendTabError(result.error);
                     else {
+                        const enrichedArticle = await enrichArticle(result.article);
                         // set locally
                         tabs.set(summaryTabId, {
-                            article: result.article,
+                            article: enrichedArticle,
                             url: tabs.get(activeTabId)?.url,
                             title: tabs.get(activeTabId)?.title,
                             isLoading: false

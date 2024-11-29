@@ -126,13 +126,13 @@ function handleChromeMessages(message, _sender, sendResponse) {
         case "summarizer":
             (async () => {
                 const summarization = await generateSummary(message.article, "tl;dr", "medium");
-                sendResponse({summarization: summarization});
+                sendResponse(summarization);
             })()
             return true;
         case "translator":
             (async () => {
-                const translation = await translateText(message.text, "es");
-                sendResponse({translation: translation});
+                const translation = await translateText(message.text, message.language);
+                sendResponse(translation);
             })()
             return true;
     }
@@ -146,9 +146,8 @@ export async function translateText(text, targetLanguage) {
         session.destroy();
         return translation;
     } catch (e) {
-        console.log('Translation failed');
-        console.error(e);
-        return 'Error: ' + e.message;
+        console.error("Error: " + e.message);
+        return null;
     }
 }
 
