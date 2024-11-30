@@ -81,14 +81,15 @@ You can build the extension using the **Bash Script** defined as `build.sh`. Jus
 > [!WARNING]
 > Gemini Nano for Chrome is still in experimental and only running from **Chrome 131** to **Chrome 136**.
 > For Translation API, you will need: Version 131.0.6778.2 or above.
-> For Summarization API, you will need: Version 129.0.6639.0 or above. (preferrably [Chrome Canary](https://www.google.com/chrome/canary/))
+> For Summarization API, you will need: Version 129.0.6639.0 or above.
+> preferrably use [Chrome Canary](https://www.google.com/chrome/canary/)
 
 Check these documentations for: [Summarization API](https://docs.google.com/document/d/1Bvd6cU9VIEb7kHTAOCtmmHNAYlIZdeNmV7Oy-2CtimA/edit?tab=t.0) and [Translation API](https://docs.google.com/document/d/1bzpeKk4k26KfjtR-_d9OuXLMpJdRMiLZAOVNMuFIejk/edit?tab=t.0) To properly setup your Chrome to be able to use the In-Device capabilities.
 
 # Problems and Future Plans
 
 - [ ] The built-in AI capabilities (Summarization, Translation) are still in Beta
-  - The process is too slow (especially for summarization) in addition to the time taken by the Agent
+  - The process is too slow (especially for summarization) in addition to the time taken by the Agent. (Currently based on the current flow)
   - The exception `The model attempted to output text in an untested language, and was prevented from doing so` is thrown frequently
 - [ ] **Ask the article** functionality exists but the process is unconvenient that the feature is removed
   - The article has to be indexed so the user can ask questions about it, but auto-indexing the article can be a waste of resources since the user might not want to ask questions (indexing is necessary for RAG implmentation)

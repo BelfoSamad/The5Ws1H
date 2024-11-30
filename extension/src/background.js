@@ -1,4 +1,4 @@
-import {enrichArticle, sendTabDetails, sendTabError, startAnimations, summarizeArticle, stopAnimations} from "./utilities";
+import {summarizeArticleText, translateSummary, sendTabDetails, sendTabError, startAnimations, summarizeArticle, stopAnimations} from "./utilities";
 
 //------------------------------- Declarations
 let creating; // A global promise to avoid concurrency issues
@@ -24,17 +24,27 @@ chrome.runtime.onMessage.addListener(async (message) => {
                 sendTabDetails(tabs.get(summaryTabId));
 
                 // summarize article
-                const result = await summarizeArticle(message.url);
+                const resultPromise = summarizeArticle(message.url);
+                const articleSummaryPromise = summarizeArticleText(summaryTabId);
+
+                /* 
+                 * summarize article remotely (5Ws1H) and locally (text) asynchronously to not take too
+                 * much time. Currently In-Device Summarization takes too much time!
+                 */
+                const [result, articleSummary] = await Promise.all([resultPromise, articleSummaryPromise]);
 
                 // tab might be removed, check first if still exists then apply changes
                 if (tabs.has(summaryTabId)) {
                     // an error caught send Error to Sidepanel
                     if (result.error != null) sendTabError(result.error);
                     else {
-                        const enrichedArticle = await enrichArticle(summaryTabId, result.article);
+                        const article = result.article;
+                        const translatedSummary = await translateSummary(article.summary);
+                        if(articleSummary != null) article["text_summary"] = articleSummary;
+                        if(translatedSummary != null) article["translation"] = translatedSummary;
                         // set locally
                         tabs.set(summaryTabId, {
-                            article: enrichedArticle,
+                            article: article,
                             url: tabs.get(activeTabId)?.url,
                             title: tabs.get(activeTabId)?.title,
                             isLoading: false
