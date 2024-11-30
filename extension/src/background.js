@@ -100,12 +100,17 @@ async function setupOffscreenDocument(path) {
     if (creating) {
         await creating;
     } else {
-        creating = chrome.offscreen.createDocument({
-            url: path,
-            reasons: ['DOM_SCRAPING'],
-            justification: 'this document is used to communicate with firebase (Auth, Firestore, Functions)',
-        });
-        await creating;
-        creating = null;
+        try {
+            creating = chrome.offscreen.createDocument({
+                url: path,
+                reasons: ['DOM_SCRAPING'],
+                justification: 'this document is used to communicate with firebase (Auth, Firestore, Functions)',
+            });
+            await creating;
+            creating = null;
+        } catch (e) {
+            //trying to re-create offscreen document, stop
+            creating = null
+        }
     }
 }
