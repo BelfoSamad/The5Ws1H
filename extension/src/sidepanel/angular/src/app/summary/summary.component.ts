@@ -39,7 +39,7 @@ export class SummaryComponent implements OnChanges {
 
   //Data
   summaries: any[] = [];
-  currentIndex = -1;
+  currentIndex = 0;
   summarized = false;
 
   //Dialog
@@ -48,7 +48,7 @@ export class SummaryComponent implements OnChanges {
   constructor(private wikipediaService: WikipediaService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(!this.article?.text_summary) this.currentIndex = 0;
+    if(this.article?.text_summary != null) this.currentIndex = -1;
     if (this.article != null) this.prepareList(this.article!.summary)
   }
 
@@ -106,7 +106,7 @@ export class SummaryComponent implements OnChanges {
   }
 
   switchLanguage() {
-    if (this.summarized) this.prepareList(this.article!.translation!);
+    if (!this.summarized) this.prepareList(this.article!.translation!);
     else this.prepareList(this.article!.summary!);
 
     // switch

@@ -173,7 +173,6 @@ async function createTranslator(targetLanguage) {
 //------------------------------- Summarization
 export async function generateSummary(article, type, length) {
     try {
-        console.log(article);
         const session = await createSummarizer(
             {
                 type: type, //tl;dr, teaser, headline

@@ -29,8 +29,8 @@
         </mat-card-header>
         <mat-card-content class="answer mat-body-large">
             @if (isArray(summaries[currentIndex].answer)) {
-            @for(item of summaries[currentIndex].answer; track item) {
-            <span class="clickable-answer" (click)="onAnswerClick(item)">{{item}}</span>,
+            @for(item of summaries[currentIndex].answer; track item; let index = $index) {
+            <span class="clickable-answer" (click)="onAnswerClick(item)">{{item}}</span><span *ngIf="index < summaries[currentIndex].answer.length - 2">,  </span>
             }
             } @else {
             <span>{{ summaries[currentIndex].answer }}</span>
@@ -43,7 +43,7 @@
             <span *ngFor="let item of summaries; let i = index" [class.active]="i === currentIndex">•</span>
         </div>
         <div class="navigation-buttons">
-            <button mat-icon-button (click)="goToPrevious()" [disabled]="summaries.length == 0 || (currentIndex === -1 && article?.text_summary) || currentIndex === 0">
+            <button mat-icon-button (click)="goToPrevious()" [disabled]="summaries.length == 0 || (currentIndex === -1 && article?.text_summary) || (currentIndex === 0 && !article?.text_summary)">
                 <mat-icon>chevron_left</mat-icon>
             </button>
             <button mat-icon-button (click)="goToNext()" [disabled]="summaries.length == 0 || currentIndex === summaries.length - 1">

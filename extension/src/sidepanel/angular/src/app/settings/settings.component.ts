@@ -35,6 +35,7 @@ export class SettingsComponent implements OnInit {
   type: string | undefined;
   length: string | undefined;
   supportedLanguages = [
+    {name: "Arabic", code: "ar"},
     {name: "Mandarin Chinese", code: "zh"},
     {name: "Japanese", code: "ja"},
     {name: "Portuguese", code: "pt"},
@@ -54,7 +55,7 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
     this.settingsService.getSettings().then(settings => {
       this.language = settings["targetLanguage"] ?? "es";
-      this.type = settings["summaryType"] ?? "tl;dr";
+      this.type = settings["summaryType"] ?? "key-points";
       this.length = settings["summaryLength"] ?? "medium";
     });
   }

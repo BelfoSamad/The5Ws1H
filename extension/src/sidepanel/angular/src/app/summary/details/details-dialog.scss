@@ -1,9 +1,10 @@
 .dialog-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    flex-flow: wrap;
     justify-content: center;
     align-items: center;
+    width: 100%;
 }
 
 h2 {

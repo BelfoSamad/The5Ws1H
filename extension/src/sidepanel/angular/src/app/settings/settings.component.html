@@ -22,6 +22,7 @@
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Summary Type</mat-label>
         <mat-select [value]="type" [disabled]="!isSummarizerAvailable"  (selectionChange)="onTypeChanged($event)">
+          <mat-option value="key-points">Key Points</mat-option>
           <mat-option value="tl;dr">TL;DR</mat-option>
           <mat-option value="teaser">Teaser</mat-option>
           <mat-option value="headline">Headline</mat-option>
