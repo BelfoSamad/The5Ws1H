@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "The5Ws1H",
-  "description": "Effortlessly summarize your news articles using the 5Ws and 1H framework—Who, What, When, Where, Why, and How—for clear and concise insights!",
-  "version": "1.0.0",
+  "description": "Effortlessly summarize your news articles using the 5Ws and 1H framework—Who, What, When, Where, Why, and How!",
+  "version": "1.1.0",
   "permissions": [
     "activeTab",
     "tabs",
