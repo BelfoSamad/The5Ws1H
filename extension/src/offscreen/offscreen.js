@@ -1,6 +1,6 @@
 import {app} from '../configs';
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth/web-extension';
-import {getFirestore, getDoc, getDocs, setDoc, query, collection, where} from 'firebase/firestore';
+import {getFirestore, getDoc, getDocs, setDoc, doc, query, collection, where} from 'firebase/firestore';
 import {getFunctions, httpsCallable} from 'firebase/functions';
 import {Readability} from "@mozilla/readability";
 
@@ -112,16 +112,16 @@ function handleChromeMessages(message, _sender, sendResponse) {
         //--------------------------- In-Device Tools
         case "summarizer_available":
             (async () => {
-                if (window?.ai?.summarizer == null) sendResponse({available: false});
+                if (self?.ai?.summarizer == null) sendResponse({available: false});
                 else {
-                    const canSummarize = await window.ai.summarizer.capabilities();
+                    const canSummarize = await self.ai.summarizer.capabilities();
                     if (canSummarize.available === 'no') sendResponse({available: false});
                     else sendResponse({available: true});
                 }
             })();
             return true;
         case "translator_available":
-            (async () => {sendResponse({available: window?.ai?.translator != null});})();
+            (async () => {sendResponse({available: self?.ai?.translator != null});})();
             return true;
         case "summarizer":
             (async () => {
@@ -160,11 +160,11 @@ export async function translateText(text, targetLanguage) {
 }
 
 async function createTranslator(targetLanguage) {
-    if (!window.ai || !window.ai.translator) {
+    if (!self.ai || !self.ai.translator) {
         throw new Error('AI Translation is not supported in this browser');
     }
 
-    return await window.ai.translator.create({
+    return await self.ai.translator.create({
         sourceLanguage: "en",
         targetLanguage: targetLanguage,
     });
@@ -194,14 +194,14 @@ export async function generateSummary(article, type, length) {
 }
 
 async function createSummarizer(config, downloadProgressCallback) {
-    if (!window.ai || !window.ai.summarizer) {
+    if (!self.ai || !self.ai.summarizer) {
         throw new Error('AI Summarization is not supported in this browser');
     }
-    const canSummarize = await window.ai.summarizer.capabilities();
+    const canSummarize = await self.ai.summarizer.capabilities();
     if (canSummarize.available === 'no') {
         throw new Error('AI Summarization is not supported');
     }
-    const summarizationSession = await window.ai.summarizer.create(
+    const summarizationSession = await self.ai.summarizer.create(
         config,
         downloadProgressCallback
     );
