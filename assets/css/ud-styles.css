@@ -150,6 +150,10 @@ p {
   background: var(--heading-color);
 }
 
+.container {
+  height: 100vh;
+}
+
 @media (max-width: 767px) {
   .container {
     padding-left: 40px;
