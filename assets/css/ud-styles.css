@@ -11,6 +11,9 @@
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   font-family: var(--font);
   font-weight: normal;
   font-style: normal;
@@ -148,10 +151,6 @@ p {
 .ud-main-btn:hover {
   color: var(--white);
   background: var(--heading-color);
-}
-
-.container {
-  height: 100vh;
 }
 
 @media (max-width: 767px) {
@@ -504,6 +503,7 @@ p {
 .ud-hero {
   background: var(--primary-color);
   padding-top: 180px;
+  flex: 1 1 auto;
 }
 
 @media only screen and (min-width: 768px) and (max-width: 991px) {

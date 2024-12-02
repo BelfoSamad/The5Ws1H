@@ -666,7 +666,6 @@ progress {
 .container-xl,
 .container-xxl {
     width: 100%;
-    height: 100vh;
     padding-right: var(--bs-gutter-x, .75rem);
     padding-left: var(--bs-gutter-x, .75rem);
     margin-right: auto;
@@ -677,7 +676,6 @@ progress {
 
     .container,
     .container-sm {
-        height: 100vh;
         max-width: 540px
     }
 }
@@ -687,7 +685,6 @@ progress {
     .container,
     .container-md,
     .container-sm {
-        height: 100vh;
         max-width: 720px
     }
 }
@@ -698,7 +695,6 @@ progress {
     .container-lg,
     .container-md,
     .container-sm {
-        height: 100vh;
         max-width: 960px
     }
 }
@@ -710,7 +706,6 @@ progress {
     .container-md,
     .container-sm,
     .container-xl {
-        height: 100vh;
         max-width: 1140px
     }
 }
@@ -723,8 +718,7 @@ progress {
     .container-sm,
     .container-xl,
     .container-xxl {
-        height: 100vh;
-        max-width: 1320px
+        max-width: 1320px;
     }
 }
 
