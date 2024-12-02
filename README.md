@@ -89,8 +89,9 @@ Check these documentations for: [Summarization API](https://docs.google.com/docu
 # Problems and Future Plans
 
 - [ ] The built-in AI capabilities (Summarization, Translation) are still in Beta
-  - The process is too slow (especially for summarization) in addition to the time taken by the Agent. (Currently based on the current flow)
-  - The exception `The model attempted to output text in an untested language, and was prevented from doing so` is thrown frequently
+  - The process is too slow (especially for summarization) in addition to the time taken by the Agent. (Currently based on the current flow).
+  - The exception `The model attempted to output text in an untested language, and was prevented from doing so` is thrown frequently.
+  * When summarization, sometimes the wrong content is passed (Cookies request explanation text instead of the article) which might lead into: slower summarization time, summary being repetitive text. -- This is related more into the extension. It should be able to figure out the actual article content.
 - [ ] **Ask the article** functionality exists but the process is unconvenient that the feature is removed
   - The article has to be indexed so the user can ask questions about it, but auto-indexing the article can be a waste of resources since the user might not want to ask questions (indexing is necessary for RAG implmentation)
   - The article might not be enough to answer the user's questins - a solution would be to fetch for related articles to add more context
