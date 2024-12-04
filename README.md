@@ -95,4 +95,4 @@ Check these documentations for: [Summarization API](https://docs.google.com/docu
 - [ ] **Ask the article** functionality exists but the process is unconvenient that the feature is removed
   - The article has to be indexed so the user can ask questions about it, but auto-indexing the article can be a waste of resources since the user might not want to ask questions (indexing is necessary for RAG implmentation)
   - The article might not be enough to answer the user's questins - a solution would be to fetch for related articles to add more context
-- [ ] The plan is to move fully into in-device capabilities. Awaiting the **Prompt API** to be able to generate structured outputs. The **Summarization API** can be used to make the article slower then passed into **Prompt API** to generate the summary.
+- [ ] The plan is to move fully into in-device capabilities. Awaiting the **Prompt API** to be add more input tokens to be able to accept big articles. The **Summarization API** can be used to make the article slower then passed into **Prompt API** to generate the summary.
